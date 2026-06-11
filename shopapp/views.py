@@ -4,32 +4,34 @@ from .forms import LoginForm
 from .models import User
 
 
-def index(request):
+def main(request):
     return render(request, 'main.html')
 
-class Login(View):
-    def get(self, request):
-        form = LoginForm()
-        context = {
-            "form":form
-        }
-        return render(request, "login.html", context)
+
+
+# class Login(View):
+#     def get(self, request):
+#         form = LoginForm()
+#         context = {
+#             "form":form
+#         }
+#         return render(request, "login.html", context)
     
-    def post(self,request):
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user_id = form.cleaned_data["user_id"]
-            password = form.cleaned_data["password"]
+#     def post(self,request):
+#         form = LoginForm(request.POST)
+#         if form.is_valid():
+#             user_id = form.cleaned_data["user_id"]
+#             password = form.cleaned_data["password"]
 
-            user=User.objects.filter(user_id=user_id, password=password).first()
+#             user=User.objects.filter(user_id=user_id, password=password).first()
 
-            if user:
-                 return redirect("main.html")
-            else:
-                 error="ユーザーはいません（またはパスワードが違います）"
+#             if user:
+#                  return redirect("main.html")
+#             else:
+#                  error="ユーザーはいません（またはパスワードが違います）"
 
-        context={"form":form, "error":error}
-        return render(request, "login.html", context)
+#         context={"form":form, "error":error}
+#         return render(request, "login.html", context)
 
 
 # class SignupSuccess(View):
