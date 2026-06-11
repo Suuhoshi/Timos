@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <title>会員ログイン</title>
+    </head>
+    <body>
+        <h2>
+            ログインしてください。
+        </h2>
+        <br>
+        <form action="{% url 'shopapp:login' %}", method="POST">
+            <label>会員ID：</label>
+            <input type="text", name = "user_id">
+            <label>パスワード：</label>
+            <input type="text", name = "password">
+        </form>
+    </body>
+</html>
+
+
+        
