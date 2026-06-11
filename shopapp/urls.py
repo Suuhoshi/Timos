@@ -3,7 +3,7 @@ from . import views
 
 app_name="shopapp"
 
-urlspatterns =[
+urlpatterns =[
     path('', views.index),
     # path()
 ]
