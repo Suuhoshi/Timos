@@ -3,7 +3,26 @@
     <title>検索結果</title>
 </head>
 <body>
-    <h2>キーワード{{}}カテゴリ{{}}の検索結果</h2> 
+    <h2>キーワード"{{ keyword }}" カテゴリ"{{ category_name }}"の検索結果</h2> 
 
+    <table border="1">
+        <tr>
+            <th>商品名</th>
+            <th>商品の色</th>
+            <th>メーカー名</th>
+            <th>価格</th>
+        </tr>
+
+        {% for item in items%}
+        <tr>
+            <td><a href="{%url 'shopapp:detail' item.item_id%}">{{ item.name }}</a></td>
+            <td>{{ item.color }}</td>
+            <td>{{ item.manufacturer }}</td>
+            <td>{{ item.price }}円</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
     <a href="">商品検索へ</a>
 </body>
