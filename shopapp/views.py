@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from .forms import LoginForm
-from .models import Category, Item
+from .forms import UserForm
+from .models import Category, Item, User
 
 
 def main(request):
@@ -12,6 +12,7 @@ def main(request):
     return render(request, 'main.html', context)
 
 
+
 def search(request):
     category_id = request.GET.get("category_id")
     keyword = request.GET.get("keyword")
@@ -20,16 +21,9 @@ def search(request):
     category_name =""
 
     if category_id:
-        # print('------------------------------')
-        # print(category_id)
-        # print(keyword)
-        # print('------------------------------')
         category =Category.objects.get(category_id=category_id)
         category_name=category.name
         if category.category_id !=0:
-            # print('------------------------------')
-            # print(category)
-            # print('------------------------------')
             items = items.filter(category=category)
 
     if keyword:
@@ -44,39 +38,47 @@ def search(request):
 
 
 
-
 def detail(request, item_id):
-    print("---------------")
-    print("item_id")
     item=Item.objects.get(item_id=item_id)
     context={
         "item_detail":item,
+        "range":range(1,item.stock+1)
     }
     return render(request, "itemDetail.html", context)
 
-# class Login(View):
-#     def get(self, request):
-#         form = LoginForm()
-#         context = {
-#             "form":form
-#         }
-#         return render(request, "login.html", context)
-    
-#     def post(self,request):
-#         form = LoginForm(request.POST)
-#         if form.is_valid():
-#             user_id = form.cleaned_data["user_id"]
-#             password = form.cleaned_data["password"]
 
-#             user=User.objects.filter(user_id=user_id, password=password).first()
 
-#             if user:
-#                  return redirect("main.html")
-#             else:
-#                  error="ユーザーはいません（またはパスワードが違います）"
+def login(request):
+    if request.session.get('is_login', None):
+        print("test")
+        return render(request, 'main.html', locals())
+        # return redirect('/')
+    if request.method == 'POST':
+        login_form = UserForm(request.POST)
+        message = "入力した内容を再度確認してください"
 
-#         context={"form":form, "error":error}
-#         return render(request, "login.html", context)
+        if login_form.is_valid():
+            user_id = login_form.cleaned_data.get("id")
+            password = login_form.cleaned_data.get("password")
+            try:
+                user = User.objects.get(user_id=user_id)
+            except:
+                message = "ユーザが存在しません"
+                return render(request, "login.html", locals())
+            
+            if user.password == password:
+                request.session['is_login'] = True
+                request.session['user_id'] = user.user_id
+                return redirect('shopapp:main')
+            else:
+                message ='パスワードが正しくありません。'
+                return render(request, "shopapp/login.html", locals())
+        else:
+            return render(request, "login.html", locals())
+    login_form = UserForm()
+    return render(request, "login.html", locals())
+
+
 
 
 # class SignupSuccess(View):

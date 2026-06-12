@@ -29,6 +29,14 @@
     </table>
 
     <br>
+    数量
+    <select name="stock">
+        {% for i in range %}
+                <option value="{{i}}">{{i}}</option>
+        {% endfor %}
+        </select>
+
+    <br>
     <a href="">商品検索へ</a>
 
 </body>

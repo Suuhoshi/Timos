@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+{% load static %}
 <html lang="ja">
     <head>
         <meta charset="UTF-8" />
@@ -9,12 +9,18 @@
         <h2>
             ログインしてください。
         </h2>
-        <br>
-        <form action="{% url 'shopapp:login' %}", method="POST">
-            <label>会員ID：</label>
-            <input type="text", name = "user_id">
-            <label>パスワード：</label>
-            <input type="text", name = "password">
+
+        <form action="login" method="POST">
+            {% csrf_token %}
+            <table>
+                {{ login_form }}
+                <tr>
+                    <td colspan="2"><input type="submit" value="ログイン"></td>
+                </tr>
+            </table>
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
         </form>
     </body>
 </html>

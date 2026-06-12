@@ -1,15 +1,22 @@
 from django import forms
 from django.db import models
 
-# class CategoryForm(forms.Form):    
-#     category = forms.ModelChoiceField(
-#         models.Category.object_by('category_id'),
-#         label="カテゴリ", to_field_name="category_id", initial="0")
 
-class LoginForm(forms.Form):
-    user_id = forms.CharField(label="会員ID")
-    password = forms.CharField(label="パスワード")
+# ログインフォーム------------------------------------
 
+class UserForm(forms.Form):
+    id = forms.CharField(label="会員ID", max_length=128)
+    password = forms.CharField(label="パスワード", max_length=256, widget=forms.PasswordInput(render_value=False))
+
+    def clean_id(self):
+        value = self.cleaned_data["id"]
+        return value
+    def clean_id(self):
+        value = self.cleaned_data["id"]
+        return value
+
+
+# 会員登録フォーム------------------------------------
 
 class UserCreatForm(forms.Form): 
     user_id = forms.CharField(label="会員ID", max_length=50)
