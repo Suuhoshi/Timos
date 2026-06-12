@@ -15,9 +15,19 @@
             <button type="submit">検索</button>
 
             <br><br>
-            <a href="cart">ショッピングカートを見る</a>
-            <br>
-            <a href="login">ログイン</a>
+            <a href="cart">ショッピングカートを見る</a><br><br>
+            <a href="">購入履歴（任意機能）</a><br><br><br>
+
+            {% if request.session.is_login %}
+            <a href="">会員情報の確認</a><br>
+            <a href="">会員登録の変更</a><br>
+            <a href="">ログアウト</a><br>
+
+            {% else %}
+            <a href="/shopapp/login">ログイン</a><br><br>
+            {% endif %}
+
+            <a href="">管理者ページ（任意機能）</a><br>
     </form>
 
 </body>

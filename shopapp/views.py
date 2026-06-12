@@ -5,6 +5,7 @@ from .models import Category, Item, User
 
 
 def main(request):
+    # request.session.flush()
     categories = Category.objects.all().order_by("category_id")
     context ={
         "categories":categories
@@ -51,8 +52,8 @@ def detail(request, item_id):
 def login(request):
     if request.session.get('is_login', None):
         print("test")
-        return render(request, 'main.html', locals())
-        # return redirect('/')
+        # return render(request, 'main.html', locals())
+        return redirect('/')
     if request.method == 'POST':
         login_form = UserForm(request.POST)
         message = "入力した内容を再度確認してください"
@@ -69,10 +70,12 @@ def login(request):
             if user.password == password:
                 request.session['is_login'] = True
                 request.session['user_id'] = user.user_id
-                return redirect('shopapp:main')
+                # return redirect('shopapp:main')
+                # return render(request, 'main.html', locals())
+                return redirect('/shopapp/')
             else:
                 message ='パスワードが正しくありません。'
-                return render(request, "shopapp/login.html", locals())
+                return render(request, "login.html", locals())
         else:
             return render(request, "login.html", locals())
     login_form = UserForm()
