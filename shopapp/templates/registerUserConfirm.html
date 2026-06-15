@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<head>
+    <title>会員登録の確認</title>
+</head>
+
+<body>
+    <h2>以下の情報で登録しますか？</h2>
+
+    <table border="1">
+        <tr>
+            <th>会員ID</th>
+            <td><input type="text"name="user_id" value="{{ user.user_id }}" readonly></td>
+        </tr>
+        <tr>
+            <th>パスワード</th>
+            <td>●●●●●●</td>
+        </tr>
+        <tr>
+            <th>お名前</th>
+            <td>{{ form.name.value }}</td>
+        </tr>
+        <tr>
+            <th>ご住所</th>
+            <td>{{ form.address.value }}</td>
+        </tr>
+
+
+    <form action="/shopapp/register/commit" method="post">
+    {% csrf_token %}
+
+    <input type="hidden" name="user_id" value="{{ form.user_id.value }}">
+    <input type="hidden" name="password" value="{{ form.password.value }}">
+    <input type="hidden" name="name" value="{{ form.name.value }}">
+    <input type="hidden" name="address" value="{{ form.address.value }}">
+
+    <tr>
+        <td colspan="2"><button type="submit">登録</button></td>
+    </tr>
+    </form>
+</table>
+
+
+</body>

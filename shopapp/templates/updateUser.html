@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+    <title>会員情報</title>
+</head>
+
+<body>
+    <h2>会員情報</h2>
+    <form action="/shopapp/updateUserConfirm/" method="post">
+    <table border="1">
+        <tr>
+            <th>会員ID</th>
+            <td><input type="text" name="user_id" value="{{ user.user_id }}" readonly></td>
+        </tr>
+        <tr>
+            <th>パスワード</th>
+            <td>{{ form.password }}</td>
+        </tr>
+        <tr>
+            <th>パスワード（確認）</th>
+            <td>{{ form.password_confirm }}</td>
+        </tr>
+        <tr>
+            <th>お名前</th>
+            <td>{{ form.name }}</td>
+        </tr>
+        <tr>
+            <th>ご住所</th>
+            <td>{{ form.address }}</td>
+        </tr>
+        <tr>
+            <td colspan="2"><button type="submit">変更</button></td>
+        </tr>
+    </table>
+
+    {{errors}}
+</form>
+
+<br>
+    <a href="/shopapp/deleteConfirm/">退会する</a><br><br>
+    <a href="">購入履歴（任意機能）へ</a><br>
+    <a href="/shopapp/">商品検索へ</a><br>
+
+</body>

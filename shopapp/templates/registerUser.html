@@ -1,35 +1,46 @@
 <!DOCTYPE html>
+{% load static %}
 
-<html lang="ja">
     <head>
         <meta charset="UTF-8" />
         <title>会員登録</title>
     </head>
+
+
     <body>
         <h2>
-            会員登録をしてください。
+            会員情報を入力してください。
         </h2>
-        <form action="{% url "signup" %}", method="POST">
-            {{form}}
+        
+        <form action="/shopapp/register/confirm", method="POST">
+            <table border="1">
+                {% csrf_token %}
+                <tr>
+                    <th>会員ID</th>
+                    <td>{{form.user_id}}</td>
+                </tr>
+                <tr>
+                    <th>パスワード</th>
+                    <td>{{form.password}}</td>
+                </tr>
+                <tr>
+                    <th>パスワード(確認)</th>
+                    <td>{{form.password_confirm}}</td>
+                </tr>
+                <tr>
+                    <th>お名前</th>
+                    <td>{{form.name}}</td>
+                </tr>
+                <tr>
+                    <th>ご住所</th>
+                    <td>{{form.address}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="submit">登録確認</button></td>
+                </tr>
+            </table>
 
-            <a href="{% url "signup_success" %}">
-                <button class="btn btn-primary">登録</button>
-            </a>
-            <br><br>
-            <a href="{% url "top" %}">TOPに戻る</a>
-        <!-- <form action="{% url "register" %}", method="POST">
-            {{form}}
+            {{errors}}
 
-            <a href="{% url "M03" %}">
-                <button>登録確認</button>
-            </a>
-
-            <br>
-            <a href="{% url "S01" %}">TOPに戻る</a>
-
-        </form> -->
-
-        <br>
-        <a href="{% url 'main' %}">商品検索へ</a>
+        </form>
     </body>
-</html>

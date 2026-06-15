@@ -8,9 +8,18 @@ urlpatterns =[
     path('search/', views.search, name="search"),
     path('detail/<int:item_id>/', views.detail, name="detail"),
     path('login/', views.login, name="log"),
-    path('cart/', views.cart, name="hoge"),
-    # path('signup_success', views.SignupSuccess.as_view(), name="signup_success"),
-    # path('', views.register, name="M02"),
-    # path('', views. ,name="")
-    # path('' ,views.index),
+    path('cart/', views.cart, name="cart"),
+    path('register/', views.register_user, name="register_user"),
+    path('register/confirm', views.register_confirm, name="register_confirm"),
+    path('register/commit', views.register_commit, name="register_commit"), 
+    path('userinfo/', views.user_info, name="user_info"),
+    path('updateUser/', views.update_user, name='update_user'),
+    path('updateUserConfirm/', views.update_user_confirm, name="update_user_confirm"),   
+    path('updateUserCommit/', views.update_user_commit, name='update_user_commit'),
+    path('logout/', views.logout_view, name="logout"),
+    path('deleteConfirm/', views.delete_confirm, name="delete_confirm"),
+    path('deleteAccount/', views.delete_account, name="delete_account"),
 ]
+
+
+

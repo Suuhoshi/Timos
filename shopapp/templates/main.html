@@ -19,9 +19,10 @@
             <a href="">購入履歴（任意機能）</a><br><br><br>
 
             {% if request.session.is_login %}
-            <a href="">会員情報の確認</a><br>
-            <a href="">会員登録の変更</a><br>
-            <a href="">ログアウト</a><br>
+            ようこそ{{name}}さん<br>
+            <a href="/shopapp/userinfo/">会員情報の確認</a><br>
+            <a href="/shopapp/updateUser/">会員情報の変更</a><br>
+            <a href="/shopapp/logout/">ログアウト</a><br>
 
             {% else %}
             <a href="/shopapp/login">ログイン</a><br><br>

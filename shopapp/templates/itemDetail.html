@@ -8,39 +8,41 @@
     <table border="1">
         <tr>
             <th>商品名</th>
-            <td>{{ item_detail.name }}</td>
+            <td>{{ item.name }}</td>
         </tr>
         <tr>
             <th>商品の色</th>
-            <td>{{ item_detail.color }}</td>
+            <td>{{ item.color }}</td>
         </tr>
         <tr>
             <th>メーカー名</th>
-            <td>{{ item_detail.manufacturer }}</td>
+            <td>{{ item.manufacturer }}</td>
         </tr>
         <tr>
             <th>価格</th>
-            <td>{{ item_detail.price }}</td>
+            <td>{{ item.price }}</td>
         </tr>
         <tr>
             <th>在庫数</th>
-            <td>{{ item_detail.stock }}</td>
+            <td>{{ item.stock }}</td>
         </tr>
     </table>
 
     <br>
-    数量
-    <select name="stock">
-        {% for i in range %}
-                <option value="{{i}}">{{i}}</option>
-        {% endfor %}
-        </select>
 
-    <form>
-        <button>ショッピングカートに入れる</button>
+    <form action="/shopapp/cart/" method="post">
+        数量
+        <select name="amount">
+            {% for i in range %}
+                <option value="{{i}}">{{i}}</option>
+            {% endfor %}
+        </select>
+        <input type="hidden" name="item_id" value="{{ item.item_id }}">
+        <button type="submit">ショッピングカートに入れる</button>
     </form>
 
+
     <br>
-    <a href="">商品検索へ</a>
+    <a href="/shopapp/">商品検索へ</a>
 
 </body>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+    <title>退会確認</title>
+</head>
+
+<body>
+    <h2>{{ name }}さん、本当に退会しますか？</h2>
+    <form action="/shopapp/deleteAccount/" method="POST">
+        <button type="submit">退会</button>
+    </form>
+
+    <br>
+    <a href="/shopapp/">商品検索へ</a>
+</body>

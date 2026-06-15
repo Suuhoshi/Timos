@@ -12,16 +12,29 @@
 
         <form action="/shopapp/login/" method="POST">
             {% csrf_token %}
-            <table>
-                {{ login_form }}
+            <table border="1">
+                <tr>
+                    <th>会員ID</th>
+                    <td>{{ login_form.id }}</td>
+                </tr>
+                <tr>
+                    <th>パスワード</th>
+                    <td>{{ login_form.password }}</td>
+                </tr>
                 <tr>
                     <td colspan="2"><input type="submit" value="ログイン"></td>
                 </tr>
             </table>
+
             {% if message %}
                 <div>{{ message }}</div>
             {% endif %}
+
         </form>
+
+        <br>
+        <a href="/shopapp/register/">会員登録</a>
+
     </body>
 </html>
 

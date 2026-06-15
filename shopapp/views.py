@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from django.views.generic import View
-from .forms import UserForm
-from .models import Category, Item, User
+# from django.views.generic import View
+from .forms import UserForm, RegisterUserForm, RegisterUpdateForm
+from .models import Category, Item, User, Itemsincart
+from django.contrib.auth import logout
+
 
 
 def main(request):
@@ -42,7 +44,7 @@ def search(request):
 def detail(request, item_id):
     item=Item.objects.get(item_id=item_id)
     context={
-        "item_detail":item,
+        "item":item,
         "range":range(1,item.stock+1)
     }
     return render(request, "itemDetail.html", context)
@@ -53,7 +55,7 @@ def login(request):
     if request.session.get('is_login', None):
         print("test")
         # return render(request, 'main.html', locals())
-        return redirect('/')
+        return redirect('/shopapp/')
     if request.method == 'POST':
         login_form = UserForm(request.POST)
         message = "入力した内容を再度確認してください"
@@ -70,9 +72,10 @@ def login(request):
             if user.password == password:
                 request.session['is_login'] = True
                 request.session['user_id'] = user.user_id
-                # return redirect('shopapp:main')
-                # return render(request, 'main.html', locals())
+                name = user.name
+                context = {"name":name}
                 return redirect('/shopapp/')
+                # return render(request, 'main.html', locals())
             else:
                 message ='パスワードが正しくありません。'
                 return render(request, "login.html", locals())
@@ -83,32 +86,162 @@ def login(request):
 
 
 
-
-# class SignupSuccess(View):
-#       def get(self,request):
-#             return render(request, "registerUserCommit.html")
-
-# class Register(View):
-#     def get(self, request):
-#         form = SignupForm()
-#         context = {
-#             "form":form
-#         }
-#         return render(request, "signup.html", context)
-    
-#     def post(self, request):
-#         form = SignupForm(request.POST)
-#         if not form.is_valid():
-#             context = {"form":form}
-#             return render(request, "signup.html", context)
-        
-#         user = User()
-#         user.name = form.cleaned_data.get("name")
-#         user.password = form.cleaned_data.get("password")
-#         user.save()
-
-#         context={"name":user.name}
-#         return render(request, "signup_success.html", context)
-
 def cart(request):
-    return render(request, "cart.html")
+    if "user_id" not in request.session:
+        return redirect("/shopapp/login")
+
+    if request.method == "POST":
+        item_id=request.POST.get("item_id")
+        item = Item.objects.get(item_id=item_id)
+
+        user_id=request.session["user_id"]
+        user = User.objects.get(user_id=user_id)
+        
+        amount = request.POST.get("amount")
+        cart = Itemsincart(item=item, user=user, amount=amount)
+        cart.save()
+
+    #カート一覧取得---------------------
+    user = User.objects.get(user_id=request.session["user_id"])
+    cart_list = (Itemsincart.objects.filter(user=user))
+
+    context = {
+        "cart_list":cart_list
+        }
+    return render(request, "cart.html", context)
+
+
+
+def register_user(request):
+    form = RegisterUserForm()
+    context = {
+        "form":form,
+    }
+    return render(request, "registerUser.html", context)
+
+
+
+def register_confirm(request):
+    form = RegisterUserForm(request.POST)
+    if form.is_valid():
+        context ={"form":form,
+                  }
+        return render(request, "registerUserConfirm.html", context)
+
+    context={
+        "form":form,
+        "errors":form.errors
+    }
+    return render(request, "registerUser.html", context)
+
+
+
+def register_commit(request):
+    user = User(
+        user_id=request.POST["user_id"],
+        password=request.POST["password"],
+        name=request.POST["name"],
+        address=request.POST["address"],
+        )
+
+    user.save()
+    context={
+        "user":user
+    }
+    return render(request, "registerUserCommit.html", context)
+
+
+
+def user_info(request):
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+    context={
+        "user":user,
+    }
+    return render(request, "userInfo.html", context)
+
+
+
+
+def update_user(request):
+    user_id = request.session['user_id']
+    print("userid=" + str(user_id))
+    user = User.objects.get(user_id=user_id)
+    form = RegisterUpdateForm(initial={
+        "user_id":user.user_id,
+        "name":user.name,
+        "address":user.address,
+    })
+    context ={
+        "user":user,
+        "form":form,
+    }
+    return render(request, "updateUser.html", context)
+
+
+
+def update_user_confirm(request):
+    user_id = request.session['user_id']
+    user = User.objects.get(user_id=user_id)
+    form = RegisterUpdateForm(request.POST)
+    if form.is_valid():
+        context ={"form":form,
+                  "user":user,
+                  }
+        return render(request, "updateUserConfirm.html", context)
+
+    context={
+        "form":form,
+        "errors":form.errors,
+        "user":user,
+    }
+    return render(request, "updateUser.html", context)
+
+
+
+
+def update_user_commit(request):
+    if request.method == 'POST':
+        user_id=request.session["user_id"]
+        user = User.objects.get(user_id=user_id)
+
+        user.password = request.POST['password']
+        user.name = request.POST['name']
+        user.address = request.POST['address']
+
+        user.save()
+        context={
+            "user":user,
+        }
+    return render(request, 'updateUserCommit.html', context)
+
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("/shopapp/")
+
+
+
+def delete_confirm(request):
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+    name = user.name
+    context ={
+        "name":name
+    }
+    return render(request, "withdrawConfirm.html", context)
+
+
+
+def delete_account(request):
+    if request.method == "POST":
+        user_id=request.session["user_id"]
+        user = User.objects.get(user_id=user_id)
+        name = user.name
+        context ={
+            "name":name
+        }
+        logout(request)
+        user.delete()
+        return render(request, "withdrawCommit.html", context)

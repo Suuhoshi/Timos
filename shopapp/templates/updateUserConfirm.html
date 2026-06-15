@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+    <title>会員情報の更新</title>
+</head>
+
+<body>
+    <h2>以下の会員情報で更新しますか？</h2>
+
+    <table border="1">
+        <tr>
+            <th>会員ID</th>
+            <td>{{ user.user_id }}</td>
+        </tr>
+        <tr>
+            <th>パスワード</th>
+            <td>●●●●●●</td>
+        </tr>
+        <tr>
+            <th>お名前</th>
+            <td>{{ form.name.value }}</td>
+        </tr>
+        <tr>
+            <th>ご住所</th>
+            <td>{{ form.address.value }}</td>
+        </tr>
+
+
+        <form action="/shopapp/updateUserCommit/" method="POST">
+        <input type="hidden" name="password" value="{{ form.password.value }}">
+        <input type="hidden" name="name" value="{{ form.name.value }}">
+        <input type="hidden" name="address" value="{{ form.address.value }}">
+        
+        <tr>
+            <td colspan="2"><button type="submit">変更</button></td>
+        </tr>
+        </form>
+    </table>
+
+
+    <br><br>
+    <a href="/shopapp/">商品検索へ</a>
+</body>
