@@ -1,46 +1,41 @@
-{% load static %}
-<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block title %}登録内容の確認{% endblock %}
 
-<head>
-    <title>会員登録の確認</title>
-    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-</head>
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">CONFIRM</p>
+  <h1 class="page-title">登録内容の確認</h1>
 
-<body>
-    <h2>以下の情報で登録しますか？</h2>
+  <div class="card" style="margin-bottom: 24px;">
+    <ul class="info-list">
+      <li>
+        <span class="info-label">会員ID</span>
+        <span class="info-value">{{ form.user_id.value }}</span>
+      </li>
+      <li>
+        <span class="info-label">パスワード</span>
+        <span class="info-value">●●●●●●</span>
+      </li>
+      <li>
+        <span class="info-label">お名前</span>
+        <span class="info-value">{{ form.name.value }}</span>
+      </li>
+      <li>
+        <span class="info-label">ご住所</span>
+        <span class="info-value">{{ form.address.value }}</span>
+      </li>
+    </ul>
+  </div>
 
-    <table border="1">
-        <tr>
-            <th>会員ID</th>
-            <td>{{form.user_id.value}}</td>
-        </tr>
-        <tr>
-            <th>パスワード</th>
-            <td>●●●●●●</td>
-        </tr>
-        <tr>
-            <th>お名前</th>
-            <td>{{ form.name.value }}</td>
-        </tr>
-        <tr>
-            <th>ご住所</th>
-            <td>{{ form.address.value }}</td>
-        </tr>
-
-
-    <form action="/shopapp/register/commit" method="post">
+  <form action="/shopapp/register/commit" method="post">
     {% csrf_token %}
-
     <input type="hidden" name="user_id" value="{{ form.user_id.value }}">
     <input type="hidden" name="password" value="{{ form.password.value }}">
     <input type="hidden" name="name" value="{{ form.name.value }}">
     <input type="hidden" name="address" value="{{ form.address.value }}">
+    <button type="submit" class="btn btn-accent btn-full">この内容で登録する</button>
+  </form>
 
-    <tr>
-        <td colspan="2"><button type="submit">登録</button></td>
-    </tr>
-    </form>
-</table>
-
-
-</body>
+  <a href="/shopapp/register/" class="back-link">入力へ戻る</a>
+</div>
+{% endblock %}

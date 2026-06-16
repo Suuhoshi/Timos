@@ -1,46 +1,44 @@
-{% load static %}
-<!DOCTYPE html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>会員登録</title>
-        <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-    </head>
+{% extends 'base.html' %}
+{% block title %}会員登録{% endblock %}
 
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">REGISTER</p>
+  <h1 class="page-title">会員登録</h1>
 
-    <body>
-        <h2>
-            会員情報を入力してください。
-        </h2>
-        
-        <form action="/shopapp/register/confirm", method="POST">
-            <table border="1">
-                {% csrf_token %}
-                <tr>
-                    <th>会員ID</th>
-                    <td>{{form.user_id}}</td>
-                </tr>
-                <tr>
-                    <th>パスワード</th>
-                    <td>{{form.password}}</td>
-                </tr>
-                <tr>
-                    <th>パスワード(確認)</th>
-                    <td>{{form.password_confirm}}</td>
-                </tr>
-                <tr>
-                    <th>お名前</th>
-                    <td>{{form.name}}</td>
-                </tr>
-                <tr>
-                    <th>ご住所</th>
-                    <td>{{form.address}}</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button type="submit">登録確認</button></td>
-                </tr>
-            </table>
+  <div class="card">
+    <form action="/shopapp/register/confirm" method="POST">
+      {% csrf_token %}
 
-            {{errors}}
+      {% if errors %}
+        <div class="alert alert-error">{{ errors }}</div>
+      {% endif %}
 
-        </form>
-    </body>
+      <div class="form-group">
+        <label class="form-label">会員ID</label>
+        {{ form.user_id }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">パスワード</label>
+        {{ form.password }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">パスワード（確認）</label>
+        {{ form.password_confirm }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">お名前</label>
+        {{ form.name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">ご住所</label>
+        {{ form.address }}
+      </div>
+
+      <div style="margin-top: 28px;">
+        <button type="submit" class="btn btn-primary btn-full">登録内容を確認する</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -2,18 +2,18 @@
 INSERT INTO shopping_category (category_id, name) VALUES
 (0, '全て'),
 (1, '帽子'),
-(2, '鞄')
+(2, '鞄');
 
 
 INSERT INTO shopping_item (item_id, name, manufacturer, color, price, stock, recommended, category_id) VALUES
 (101, '麦わら帽子', '日本帽子製造所', '黄色', 5000, 12, TRUE, 1),
 (102, '子供よう麦わら帽子', '日本帽子製造所', '赤色', 3000, 10, TRUE, 1),
 (103, 'ハンドバック', '日本鞄製造所', '黒色', 6500, 12, TRUE, 2),
-(104, 'ショルダーバック', '日本鞄製造所', '白色', 3500, 10, TRUE, 2)
+(104, 'ショルダーバック', '日本鞄製造所', '白色', 3500, 10, TRUE, 2);
 
 
 
 INSERT INTO account_user (user_id, password, name, address) VALUES
 ('user01', '01', '一郎', '東京都1'),
 ('user02', '02', '二郎', '東京都2'),
-('user03', '03', '三郎', '東京都3')
+('user03', '03', '三郎', '東京都3');

@@ -1,41 +1,58 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-    <title>ショッピングカート</title>
-    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-</head>
+{% extends 'base.html' %}
+{% block title %}ショッピングカート{% endblock %}
 
+{% block content %}
+<div class="container">
+  <p class="page-eyebrow">CART</p>
+  <h1 class="page-title">ショッピングカート</h1>
 
-<body>
-    <h2>ショッピングカート内の商品</h2>
-
-<table border="1">
-    <tr>
+  <table class="data-table">
+    <thead>
+      <tr>
         <th>商品名</th>
-        <th>商品の色</th>
-        <th>メーカー名</th>
+        <th>色</th>
+        <th>メーカー</th>
         <th>単価</th>
         <th>数量</th>
         <th>削除</th>
-    </tr>
-
-    {% for cart in cart_list %}
-    <tr>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cart in cart_list %}
+      <tr>
         <td>{{ cart.item.name }}</td>
         <td>{{ cart.item.color }}</td>
         <td>{{ cart.item.manufacturer }}</td>
-        <td>{{ cart.item.price }}円</td>
-        <td><form action="{% url 'shopapp:cart_update' cart.id %}" method="POST"><input type="text" style="width:30px" name="new_amount" value="{{cart.amount}}">個　<input type="submit" value="変更"></form></td>
-        <td><form action="{% url 'shopapp:cart_delete' cart.id %}" method="POST"><input type="submit" value="削除"></form></td>
-    </tr>
-    {% endfor %}
+        <td>¥{{ cart.item.price|floatformat:"0" }}</td>
+        <td>
+          <form action="{% url 'shopapp:cart_update' cart.id %}" method="POST" class="cart-qty-form">
+            {% csrf_token %}
+            <input type="number" class="qty-input" name="new_amount" value="{{ cart.amount }}" min="0">
+            <input type="submit" value="変更" class="btn btn-secondary btn-sm">
+          </form>
+        </td>
+        <td>
+          <form action="{% url 'shopapp:cart_delete' cart.id %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="削除" class="btn btn-danger btn-sm">
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align:center; color:var(--ink-400); padding: 48px 16px;">
+          カートに商品がありません。
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-</table>
-<br>
-合計 {{total}}円
-<hr>
+  <div class="cart-footer">
+    <span class="cart-total-label">合計</span>
+    <span class="cart-total-amount">¥{{ total|floatformat:"0" }}</span>
+  </div>
 
-<br>
-<a href="/shopapp/">商品検索へ</a>
-
-</body>
+  <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
+</div>
+{% endblock %}
