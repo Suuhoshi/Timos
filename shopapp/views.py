@@ -106,19 +106,23 @@ def cart(request):
         user = User.objects.get(user_id=user_id)
         
         amount = request.POST.get("amount")
+
         cart = Itemsincart(item=item, user=user, amount=amount)
         cart.save()
 
     #カート一覧取得---------------------
     user = User.objects.get(user_id=request.session["user_id"])
     cart_list = (Itemsincart.objects.filter(user=user))
+    
     total = 0
     for cart in cart_list:
         total += cart.item.price*cart.amount
 
+    # items = Item.objects.get(cart_list = cart_list)
     context = {
         "cart_list":cart_list,
         "total":total,
+        # "range":range(1,items.stock+1)
         }
     return render(request, "cart.html", context)
 
@@ -257,3 +261,22 @@ def delete_account(request):
         logout(request)
         user.delete()
         return render(request, "withdrawCommit.html", context)
+    
+
+
+#任意機能----------------------------
+def cart_delete(request, pk):
+    if request.method == "POST":
+        item = Itemsincart.objects.get(pk=pk)
+        item.delete()
+    return redirect("/shopapp/cart/")
+
+
+
+def cart_update(request, pk):
+    if request.method == "POST":
+        item = Itemsincart.objects.get(pk=pk)
+        new_amount = request.POST.get("new_amount")
+        item.amount = int(new_amount)
+        item.save()
+    return redirect("/shopapp/cart/")

@@ -16,7 +16,6 @@
         <th>メーカー名</th>
         <th>単価</th>
         <th>数量</th>
-        <th>修正</th>
         <th>削除</th>
     </tr>
 
@@ -25,10 +24,9 @@
         <td>{{ cart.item.name }}</td>
         <td>{{ cart.item.color }}</td>
         <td>{{ cart.item.manufacturer }}</td>
-        <td>{{ cart.item.price }}</td>
-        <td>{{ cart.amount }}</td>
-        <td><a href="/shopapp/cartUpdata/{{cart.item.item_id}}">修正</a></td>
-        <td><a href="/shopapp/cartDelete/{{cart.item.item_id}}">削除</a></td>
+        <td>{{ cart.item.price }}円</td>
+        <td><form action="{% url 'shopapp:cart_update' cart.id %}" method="POST"><input type="text" style="width:30px" name="new_amount" value="{{cart.amount}}">個　<input type="submit" value="変更"></form></td>
+        <td><form action="{% url 'shopapp:cart_delete' cart.id %}" method="POST"><input type="submit" value="削除"></form></td>
     </tr>
     {% endfor %}
 

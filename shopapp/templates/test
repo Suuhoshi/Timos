@@ -1,0 +1,12 @@
+from django.shortcuts import get_object_or_404, redirect
+
+def cart_update(request, pk):
+    if request.method == "POST":
+        item = Itemincart.objects.get(pk=pk)
+
+        new_amount = request.POST.get("amount")
+
+        item.amount = int(new_amount)
+        item.save()
+
+    return redirect('cart_list')

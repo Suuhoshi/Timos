@@ -19,6 +19,9 @@ urlpatterns =[
     path('logout/', views.logout_view, name="logout"),
     path('deleteConfirm/', views.delete_confirm, name="delete_confirm"),
     path('deleteAccount/', views.delete_account, name="delete_account"),
+    #任意機能-----------------
+    path('cart/delete/<int:pk>', views.cart_delete, name="cart_delete"),
+    path('cart/update/<int:pk>', views.cart_update, name="cart_update"),
 ]
 
 
