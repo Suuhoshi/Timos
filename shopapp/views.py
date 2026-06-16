@@ -8,9 +8,15 @@ from django.contrib.auth import logout
 
 def main(request):
     # request.session.flush()
+    # if "user_id" not in request.session:
+    #     user_id=request.session["user_id"]
+    #     user = User.objects.get(user_id=user_id)
+    #     name = user.name
+    name = request.session.get('name')
     categories = Category.objects.all().order_by("category_id")
     context ={
-        "categories":categories
+        "categories":categories,
+        "name":name,
     }
     return render(request, 'main.html', context)
 
@@ -73,7 +79,8 @@ def login(request):
                 request.session['is_login'] = True
                 request.session['user_id'] = user.user_id
                 name = user.name
-                context = {"name":name}
+                # context = {"name":name}
+                request.session["name"]=name
                 return redirect('/shopapp/')
                 # return render(request, 'main.html', locals())
             else:
@@ -104,9 +111,13 @@ def cart(request):
     #カート一覧取得---------------------
     user = User.objects.get(user_id=request.session["user_id"])
     cart_list = (Itemsincart.objects.filter(user=user))
+    total = 0
+    for cart in cart_list:
+        total += cart.item.price*cart.amount
 
     context = {
-        "cart_list":cart_list
+        "cart_list":cart_list,
+        "total":total,
         }
     return render(request, "cart.html", context)
 
