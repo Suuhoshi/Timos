@@ -1,7 +1,9 @@
+{% load static %}
 <!DOCTYPE html>
 
 <head>
     <title>会員登録の確認</title>
+    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
 </head>
 
 <body>
@@ -10,7 +12,7 @@
     <table border="1">
         <tr>
             <th>会員ID</th>
-            <td><input type="text"name="user_id" value="{{ form.user_id }}" readonly></td>
+            <td>{{form.user_id.value}}</td>
         </tr>
         <tr>
             <th>パスワード</th>

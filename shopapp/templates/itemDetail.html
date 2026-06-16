@@ -1,7 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <head>
     <title>商品詳細</title>
+    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
 </head>
+
+
 <body>
     <h2>商品の詳細表示</h2>
 
@@ -20,11 +24,11 @@
         </tr>
         <tr>
             <th>価格</th>
-            <td>{{ item.price }}</td>
+            <td>{{ item.price }}円</td>
         </tr>
         <tr>
             <th>在庫数</th>
-            <td>{{ item.stock }}</td>
+            <td>{{ item.stock }}個</td>
         </tr>
     </table>
 

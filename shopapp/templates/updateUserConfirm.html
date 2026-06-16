@@ -1,6 +1,8 @@
+{% load static %}
 <!DOCTYPE html>
 <head>
     <title>会員情報の更新</title>
+    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
 </head>
 
 <body>
@@ -31,7 +33,7 @@
         <input type="hidden" name="address" value="{{ form.address.value }}">
         
         <tr>
-            <td colspan="2"><button type="submit">変更</button></td>
+            <td colspan="2"><button type="submit">変更確定</button></td>
         </tr>
         </form>
     </table>

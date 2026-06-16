@@ -1,6 +1,8 @@
+{% load static %}
 <!DOCTYPE html>
 <head>
     <title>会員情報</title>
+    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
 </head>
 
 <body>
@@ -28,7 +30,7 @@
             <td>{{ form.address }}</td>
         </tr>
         <tr>
-            <td colspan="2"><button type="submit">変更</button></td>
+            <td colspan="2"><button type="submit">変更確認</button></td>
         </tr>
     </table>
 
