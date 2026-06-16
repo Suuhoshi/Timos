@@ -5,13 +5,14 @@ from .models import Category, Item, User, Itemsincart
 from django.contrib.auth import logout
 
 
+#ランディングページ追加------------------------
+def landing(request):
+    return render(request, 'landing.html')
+#ランディングページ追加------------------------
+
+
 
 def main(request):
-    # request.session.flush()
-    # if "user_id" not in request.session:
-    #     user_id=request.session["user_id"]
-    #     user = User.objects.get(user_id=user_id)
-    #     name = user.name
     name = request.session.get('name')
     categories = Category.objects.all().order_by("category_id")
     context ={
