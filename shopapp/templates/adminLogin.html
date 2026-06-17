@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}管理者ログイン{% endblock %}
+
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">ADMIN LOGIN</p>
+  <h1 class="page-title">管理者ログイン</h1>
+
+  <div class="card">
+    <form action="/shopapp/admin/login/" method="POST">
+      {% csrf_token %}
+
+      {% if message %}
+        <div class="alert alert-error">{{ message }}</div>
+      {% endif %}
+
+      <div class="form-group">
+        <label class="form-label">管理者ID</label>
+        {{ admin_form.id }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">パスワード</label>
+        {{ admin_form.password }}
+      </div>
+
+      <div style="margin-top: 28px;">
+        <input type="submit" value="ログイン" class="btn btn-primary btn-full">
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
