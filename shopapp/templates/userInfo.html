@@ -26,34 +26,45 @@
       </li>
     </ul>
   </div>
-  
+
   <h2 class="section-title">購入履歴</h2>
-  {% if purchases %}
-    {% for purchase in purchases %}
-    <div class="card" style="margin-bottom: 16px;">
-      <ul class="info-list">
-        <li>
-          <span class="info-label">注文ID</span>
-          <span class="info-value">{{ purchase.parchase_id }}</span>
-        </li>
-        <li>
-          <span class="info-label">配送先</span>
-          <span class="info-value">{{ purchase.destination }}</span>
-        </li>
-        <li>
-          <span class="info-label">注文日</span>
-          <span class="info-value">{{ purchase.booked_date}}</span>
-        </li>
-      </ul>
-    </div>
-    {% endfor %}
-  {% else %}
-    <p>購入履歴はありません。</p>
-  {% endif %}
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>注文ID</th>
+        <th>配送先</th>
+        <th>注文日</th>
+        <th>状態</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for purchase in purchases %}
+      <tr>
+        <td>{{ purchase.purchase_id }}</td>
+        <td>{{ purchase.destination }}</td>
+        <td>{{ purchase.booked_date|date:"Y/m/d" }}</td>
+        <td>
+          {% if purchase.cancel %}
+            <span style="color: var(--error-500);">キャンセル済み</span>
+          {% else %}
+            <span style="color: var(--success-500);">注文確定</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="text-align:center; color:var(--ink-400); padding: 48px 16px;">
+          購入履歴はありません。
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
   <div class="action-group">
     <a href="/shopapp/updateUser/" class="btn btn-primary">会員情報を変更する</a>
     <a href="/shopapp/" class="btn btn-secondary">商品検索へ</a>
   </div>
 </div>
-{% endblock %} 
+{% endblock %}

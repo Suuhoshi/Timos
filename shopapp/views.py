@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 # from django.views.generic import View
-from .forms import UserForm, RegisterUserForm, RegisterUpdateForm
-from .models import Category, Item, User, Itemsincart
+from .forms import UserForm, RegisterUserForm, RegisterUpdateForm, AdminForm, ItemForm
+from .models import Category, Item, User, Itemsincart, Purchase, Admin, Favorite
 from django.contrib.auth import logout
 
 
@@ -49,10 +49,19 @@ def search(request):
 
 
 def detail(request, item_id):
-    item=Item.objects.get(item_id=item_id)
-    context={
-        "item":item,
-        "range":range(1,item.stock+1)
+    item = Item.objects.get(item_id=item_id)
+    # ★ 追加：お気に入り状態チェック
+    is_favorite = False
+    user_id = request.session.get("user_id")
+    if user_id:
+        user = User.objects.get(user_id=user_id)
+        is_favorite = Favorite.objects.filter(user=user, item=item).exists()
+
+    context = {
+        "item": item,
+        "range": range(1, item.stock + 1),
+        "is_login": request.session.get("is_login", False),  # ★ 追加
+        "is_favorite": is_favorite,  # ★ 追加
     }
     return render(request, "itemDetail.html", context)
 
@@ -118,11 +127,9 @@ def cart(request):
     for cart in cart_list:
         total += cart.item.price*cart.amount
 
-    # items = Item.objects.get(cart_list = cart_list)
     context = {
         "cart_list":cart_list,
         "total":total,
-        # "range":range(1,items.stock+1)
         }
     return render(request, "cart.html", context)
 
@@ -169,13 +176,14 @@ def register_commit(request):
 
 
 def user_info(request):
-    user_id=request.session["user_id"]
+    user_id = request.session["user_id"]
     user = User.objects.get(user_id=user_id)
-    context={
-        "user":user,
+    purchases = Purchase.objects.filter(user_id=user_id)
+    context = {
+        "user": user,
+        "purchases": purchases,
     }
     return render(request, "userInfo.html", context)
-
 
 
 
@@ -280,3 +288,248 @@ def cart_update(request, pk):
         item.amount = int(new_amount)
         item.save()
     return redirect("/shopapp/cart/")
+
+
+
+
+def purchase(request):
+    user = User.objects.get(user_id=request.session["user_id"])
+    context = {
+        "user": user
+    }
+    return render(request, "purchase.html", context)
+
+
+
+def purchase_confirm(request):
+    destination = request.POST["destination"]
+    cash = request.POST["cash"]
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    total = 0
+    for cart in cart_list:
+        total += (cart.item.price*cart.amount)
+
+    context = {
+        "user": user,
+        "destination": destination,
+        "cash":cash,
+        "cart_list": cart_list,
+        "total": total,
+    }
+    return render(request, "purchase_confirm.html", context)
+
+
+
+def purchase_commit(request):
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+
+    destination = request.POST["destination"]
+    purchase = Purchase()
+    purchase.destination = destination
+    purchase.user = user
+    purchase.cancel = False
+    purchase.save()
+
+    Itemsincart.objects.filter(user_id=user_id).delete()
+    name=user.name
+    context ={
+        "name":name
+    }
+    return render(request, "purchase_commit.html", context)
+  
+#管理者機能----------------------------
+def admin_login(request):
+    if request.session.get('is_admin_login', None):
+        return redirect('/shopapp/admin/')
+    if request.method == 'POST':
+        admin_form = AdminForm(request.POST)
+        message = "入力した内容を再度確認してください"
+
+        if admin_form.is_valid():
+            admin_id = admin_form.cleaned_data.get("id")
+            password = admin_form.cleaned_data.get("password")
+            try:
+                admin = Admin.objects.get(admin_id=admin_id)
+            except:
+                message = "管理者が存在しません"
+                return render(request, "adminLogin.html", locals())
+
+            if admin.password == password:
+                request.session['is_admin_login'] = True
+                request.session['admin_id'] = admin.admin_id
+                return redirect('/shopapp/admin/')
+            else:
+                message = 'パスワードが正しくありません。'
+                return render(request, "adminLogin.html", locals())
+        else:
+            return render(request, "adminLogin.html", locals())
+    admin_form = AdminForm()
+    return render(request, "adminLogin.html", locals())
+
+
+def admin_main(request):
+    if not request.session.get('is_admin_login'):
+        return redirect('/shopapp/admin/login/')
+
+    # 商品の検索
+    category_id = request.GET.get("category_id")
+    keyword = request.GET.get("keyword")
+
+    items = Item.objects.all().order_by("item_id")
+    if category_id and category_id != "0":
+        items = items.filter(category__category_id=category_id)
+    if keyword:
+        items = items.filter(name__icontains=keyword)
+    else:
+        keyword
+
+    # 購入の履歴検索
+    user_id = request.GET.get("user_id")
+    purchase_id = request.GET.get("purchase_id")
+
+    purchases = Purchase.objects.all().order_by("purchase_id")
+    if user_id:
+        purchases = purchases.filter(user__user_id__icontains=user_id)
+    if purchase_id:
+        purchases = purchases.filter(purchase_id=purchase_id)
+
+    categories = Category.objects.all().order_by("category_id")
+
+    context = {
+        "admin_id": request.session.get('admin_id'),
+        "items": items,
+        "purchases": purchases,
+        "categories": categories,
+        "register_form": ItemForm(),
+        "category_id": category_id,
+        "keyword": keyword or "",
+        "user_id": user_id,
+        "purchase_id": purchase_id or "",
+    }
+    return render(request, "adminMain.html", context)
+
+
+def admin_logout(request):
+    request.session.pop('is_admin_login', None)
+    request.session.pop('admin_id', None)
+    return redirect("/shopapp/admin/login/")
+
+
+def admin_item_register(request):
+    if not request.session.get('is_admin_login'):
+        return redirect('/shopapp/admin/login/')
+
+    if request.method == "POST":
+        form = ItemForm(request.POST)
+        register_errors = None
+
+        if form.is_valid():
+            item_id = form.cleaned_data.get("item_id")
+            if Item.objects.filter(item_id=item_id).exists():
+                register_errors = "この商品IDは既に使用されています"
+            else:
+                item = Item(
+                    item_id=item_id,
+                    name=form.cleaned_data.get("name"),
+                    manufacturer=form.cleaned_data.get("manufacturer"),
+                    color=form.cleaned_data.get("color"),
+                    price=form.cleaned_data.get("price"),
+                    stock=form.cleaned_data.get("stock"),
+                    recommended=form.cleaned_data.get("recommended"),
+                    category=form.cleaned_data.get("category"),
+                )
+                item.save()
+                return redirect("/shopapp/admin/")
+        else:
+            register_errors = form.errors
+
+        context = {
+            "admin_id": request.session.get('admin_id'),
+            "items": Item.objects.all().order_by("item_id"),
+            "purchases": Purchase.objects.all().order_by("purchase_id"),
+            "categories": Category.objects.all().order_by("category_id"),
+            "register_form": form,
+            "register_errors": register_errors,
+        }
+        return render(request, "adminMain.html", context)
+
+    return redirect("/shopapp/admin/")
+
+
+def admin_item_update(request, item_id):
+    if not request.session.get('is_admin_login'):
+        return redirect('/shopapp/admin/login/')
+
+    if request.method == "POST":
+        item = Item.objects.get(item_id=item_id)
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            item.name = form.cleaned_data.get("name")
+            item.manufacturer = form.cleaned_data.get("manufacturer")
+            item.color = form.cleaned_data.get("color")
+            item.price = form.cleaned_data.get("price")
+            item.stock = form.cleaned_data.get("stock")
+            item.recommended = form.cleaned_data.get("recommended")
+            item.category = form.cleaned_data.get("category")
+            item.save()
+    return redirect("/shopapp/admin/")
+
+
+def admin_item_delete(request, item_id):
+    if request.method == "POST":
+        item = Item.objects.get(item_id=item_id)
+        item.delete()
+    return redirect("/shopapp/admin/")
+
+
+def admin_purchase_cancel(request, purchase_id):
+    if request.method == "POST":
+        purchase = Purchase.objects.get(purchase_id=purchase_id)
+        purchase.cancel = True
+        purchase.save()
+    return redirect("/shopapp/admin/")
+
+
+# お気に入り追加
+def favorite_add(request, item_id):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("shopapp:login")
+
+    user = User.objects.get(user_id=user_id)
+    item = get_object_or_404(Item, pk=item_id)
+    Favorite.objects.get_or_create(user=user, item=item)
+
+    return redirect("shopapp:favorite_list")
+
+
+def favorite_remove(request, item_id):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("shopapp:login")
+
+    user = User.objects.get(user_id=user_id)
+    Favorite.objects.filter(user=user, item_id=item_id).delete()
+
+    return redirect("shopapp:favorite_list")
+
+
+def favorite_list(request):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("shopapp:login")
+
+    user = User.objects.get(user_id=user_id)
+    favorites = Favorite.objects.filter(user=user).select_related('item')
+
+    for fav in favorites:
+        fav.stock_range = range(1, fav.item.stock + 1)
+
+    context = {
+        "favorites": favorites,
+    }
+    return render(request, "favorite_list.html", context)

@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from shopapp.models import User
+from shopapp.models import User, Category
 
 
 # ログインフォーム------------------------------------
@@ -57,3 +57,30 @@ class RegisterUpdateForm(forms.Form):
         if password != password_confirm:
             raise forms.ValidationError("パスワードと確認用パスワードが一致しません")
         return cleaned_data
+
+
+# 管理者ログインフォーム------------------------------------
+
+class AdminForm(forms.Form):
+    id = forms.CharField(label="管理者", max_length=128)
+    password = forms.CharField(label="パスワード", max_length=256, widget=forms.PasswordInput(render_value=False))
+
+    def clean_id(self):
+        value = self.cleaned_data["id"]
+        return value
+    def clean_password(self):
+        value = self.cleaned_data["password"]
+        return value
+
+
+# 商品登録・修正フォーム------------------------------------
+
+class ItemForm(forms.Form):
+    item_id = forms.IntegerField(label="商品ID")
+    name = forms.CharField(label="商品名", max_length=128)
+    manufacturer = forms.CharField(label="メーカー名", max_length=32)
+    color = forms.CharField(label="商品の色", max_length=16)
+    price = forms.IntegerField(label="価格")
+    stock = forms.IntegerField(label="在庫数")
+    recommended = forms.BooleanField(label="オススメ", required=False)
+    category = forms.ModelChoiceField(label="カテゴリ", queryset=Category.objects.all())

@@ -1,0 +1,28 @@
+<h2>配送先情報入力</h2>
+
+<form action="/shopapp/purchaseConfirm/" method="post">
+{% csrf_token %}
+
+<table border="1">
+<tr>
+    <th>会員ID</th>
+    <td>{{ user.user_id }}</td>
+</tr>
+<tr>
+    <th>お名前</th>
+    <td>{{ user.name }}</td>
+</tr>
+<tr>
+    <th>配送先</th>
+    <td><input type="text" name="destination" value="{{ user.address }}"></td>
+</tr>
+<tr>
+    <th>決済方法</th>
+    <td><select name="cash"><option value="代金引換">代金引換</option></select></td>
+</tr>
+</table>
+
+<br>
+<input type="submit" value="確認">
+
+</form>

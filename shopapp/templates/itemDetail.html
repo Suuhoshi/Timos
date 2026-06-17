@@ -40,6 +40,18 @@
     </div>
   </form>
 
+  <!-- ★ 追加：お気に入りボタン -->
+  {% if is_login %}
+    <div style="margin-top: 16px;">
+      {% if is_favorite %}
+        <a href="{% url 'shopapp:favorite_remove' item.item_id %}" class="btn btn-danger btn-sm">♥ お気に入り解除</a>
+      {% else %}
+        <a href="{% url 'shopapp:favorite_add' item.item_id %}" class="btn btn-accent btn-sm">♡ お気に入りに追加</a>
+      {% endif %}
+    </div>
+  {% endif %}
+  <!-- ★ 追加ここまで -->
+
   <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
 </div>
 {% endblock %}

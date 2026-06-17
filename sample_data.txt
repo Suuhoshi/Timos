@@ -4,14 +4,11 @@ INSERT INTO shopping_category (category_id, name) VALUES
 (1, '帽子'),
 (2, '鞄');
 
-
 INSERT INTO shopping_item (item_id, name, manufacturer, color, price, stock, recommended, category_id) VALUES
 (101, '麦わら帽子', '日本帽子製造所', '黄色', 5000, 12, TRUE, 1),
 (102, '子供よう麦わら帽子', '日本帽子製造所', '赤色', 3000, 10, TRUE, 1),
-(103, 'ハンドバック', '日本鞄製造所', '黒色', 6500, 12, TRUE, 2),
-(104, 'ショルダーバック', '日本鞄製造所', '白色', 3500, 10, TRUE, 2);
-
-
+(201, 'ハンドバック', '日本鞄製造所', '黒色', 6500, 12, TRUE, 2),
+(202, 'ショルダーバック', '日本鞄製造所', '白色', 3500, 10, TRUE, 2);
 
 INSERT INTO account_user (user_id, password, name, address) VALUES
 ('user01', '01', '一郎', '東京都1'),
@@ -19,17 +16,12 @@ INSERT INTO account_user (user_id, password, name, address) VALUES
 ('user03', '03', '三郎', '東京都3');
 
 
-INSERT INTO shopping_purchase (destination, booked_date, cancel, user_id) VALUES
-('イギリス中央区', NOW(), 0, 'user01'),
-('アメリカ南東部', NOW(), 0, 'user01'),
-('フィンランド北極部', NOW(), 1, 'user01'),
-('インド海', NOW(), 0, 'user02'),
-('ブラジル共和国', NOW(), 1, 'user02');
+INSERT INTO administrator_admin (admin_id, password) VALUES
+('admin01', '01'),
+('admin02', '02'),
+('admin03', '03');
 
-
-
-
-
-
-
-
+INSERT INTO shopping_purchase (purchase_id, destination, booked_date, cancel, user_id) VALUES
+('04', '京都1', '2026-06-17', '0', 'user01'),
+('05', '京都2', '2026-06-17', '0', 'user02'),
+('06', '京都3', '2026-06-17', '0', 'user03');

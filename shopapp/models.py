@@ -20,6 +20,9 @@ class Category(models.Model):
     category_id = models.IntegerField(verbose_name="カテゴリID", primary_key=True)
     name = models.CharField(verbose_name="カテゴリ名", max_length=256)
 
+    def __str__(self):
+        return self.name
+
 
 class Item(models.Model):
     class Meta:
@@ -49,10 +52,10 @@ class Purchase(models.Model):
     class Meta:
         db_table = "shopping_purchase"
 
-    parchase_id = models.IntegerField(verbose_name="注文ID", primary_key=True)
+    purchase_id = models.AutoField(verbose_name="注文ID", primary_key=True)
     destination =models.CharField(verbose_name="配送先", max_length=256)
     booked_date = models.DateTimeField(verbose_name="注文日", auto_now_add=True)
-    cancel = models.BooleanField(verbose_name="オススメ", max_length=1, default=False)
+    cancel = models.BooleanField(verbose_name="キャンセル", default=False)
     user = models.ForeignKey(User, verbose_name="注文者", on_delete=models.CASCADE)
 
 
@@ -60,7 +63,7 @@ class Purchasedetil(models.Model):
     class Meta:
         db_table = "shopping_purchasedetail"
     
-    parchase_detail_id = models.IntegerField(verbose_name="注文詳細ID", primary_key=True)
+    purchase_detail_id = models.AutoField(verbose_name="注文詳細ID", primary_key=True)
     amount = models.IntegerField(verbose_name="注文数")
     item = models.ForeignKey(Item, verbose_name="商品ID", on_delete=models.CASCADE)
     purchase = models.ForeignKey(Purchase, verbose_name="注文ID", on_delete=models.CASCADE)
@@ -70,5 +73,18 @@ class Admin(models.Model):
     class Meta:
         db_table = "administrator_admin"
     
-    admin_id = models.CharField(verbose_name="管理者", max_length=128, primary_key=True)
+    admin_id = models.CharField(verbose_name="管理者ID", max_length=128, primary_key=True)
     password = models.CharField(verbose_name="パスワード", max_length=256)
+
+class Favorite(models.Model):
+    class Meta:
+        db_table = "favorite"
+        unique_together = ('user', 'item')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return
+    

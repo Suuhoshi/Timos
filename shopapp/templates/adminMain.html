@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% block title %}管理メニュー{% endblock %}
+
+{% block content %}
+<div class="container">
+  <p class="page-eyebrow">ADMIN MENU</p>
+  <h1 class="page-title">管理メニュー</h1>
+
+  <div class="action-group" style="margin-top: 0; margin-bottom: 32px; justify-content: space-between;">
+    <p class="result-meta" style="margin-bottom: 0;">ようこそ、<strong>{{ admin_id }}</strong> さん</p>
+    <a href="/shopapp/admin/logout/" class="btn btn-secondary btn-sm">ログアウト</a>
+  </div>
+
+  <!-- ============ 商品管理 ============ -->
+  <h2 class="section-title">商品管理</h2>
+
+  <!-- 商品の検索 -->
+  <div class="card" style="margin-bottom: 24px;">
+    <form action="/shopapp/admin/" method="get">
+      <div class="search-form">
+        <div class="form-group">
+          <label class="form-label">カテゴリ</label>
+          <select name="category_id">
+            {% for category in categories %}
+              <option value="{{ category.category_id }}" {% if category.category_id|stringformat:"s" == category_id %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">キーワード</label>
+          <input type="text" name="keyword" value="{{ keyword }}" placeholder="例：麦わら帽子">
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-bottom: 0; flex-shrink: 0;">検索</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 商品の一覧（修正・削除・おすすめ指定） -->
+  <div style="overflow-x: auto; margin-bottom: 24px;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>商品ID</th>
+          <th>商品名</th>
+          <th>メーカー</th>
+          <th>色</th>
+          <th>価格</th>
+          <th>在庫</th>
+          <th>カテゴリ</th>
+          <th>おすすめ</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            {{ item.item_id }}
+            <form id="upd{{ item.item_id }}" action="{% url 'shopapp:admin_item_update' item.item_id %}" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ item.item_id }}">
+            </form>
+          </td>
+          <td><input form="upd{{ item.item_id }}" type="text" name="name" value="{{ item.name }}" style="width: 160px;"></td>
+          <td><input form="upd{{ item.item_id }}" type="text" name="manufacturer" value="{{ item.manufacturer }}" style="width: 120px;"></td>
+          <td><input form="upd{{ item.item_id }}" type="text" name="color" value="{{ item.color }}" style="width: 90px;"></td>
+          <td><input form="upd{{ item.item_id }}" type="number" name="price" value="{{ item.price }}" style="width: 90px;"></td>
+          <td><input form="upd{{ item.item_id }}" type="number" name="stock" value="{{ item.stock }}" style="width: 80px;"></td>
+          <td>
+            <select form="upd{{ item.item_id }}" name="category" style="width: 120px;">
+              {% for category in categories %}
+                <option value="{{ category.category_id }}" {% if category.category_id == item.category.category_id %}selected{% endif %}>{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td style="text-align: center;">
+            <input form="upd{{ item.item_id }}" type="checkbox" name="recommended" {% if item.recommended %}checked{% endif %} style="width: 20px; height: 20px;">
+          </td>
+          <td>
+            <div style="display: flex; gap: 8px;">
+              <button form="upd{{ item.item_id }}" type="submit" class="btn btn-primary btn-sm">更新</button>
+              <form action="{% url 'shopapp:admin_item_delete' item.item_id %}" method="POST" onsubmit="return confirm('この商品を削除しますか？');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">削除</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" style="text-align:center; color:var(--ink-400); padding: 48px 16px;">
+            該当する商品が見つかりませんでした。
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 商品の新規登録 -->
+  <div class="card" style="margin-bottom: 48px;">
+    <h3 class="section-title" style="font-size: 1.125rem; margin-bottom: 20px;">商品の新規登録</h3>
+    <form action="/shopapp/admin/item/register/" method="POST">
+      {% csrf_token %}
+
+      {% if register_errors %}
+        <div class="alert alert-error">{{ register_errors }}</div>
+      {% endif %}
+
+      <div class="form-group">
+        <label class="form-label">商品ID</label>
+        {{ register_form.item_id }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">商品名</label>
+        {{ register_form.name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">メーカー名</label>
+        {{ register_form.manufacturer }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">商品の色</label>
+        {{ register_form.color }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">価格</label>
+        {{ register_form.price }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">在庫数</label>
+        {{ register_form.stock }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">カテゴリ</label>
+        {{ register_form.category }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">おすすめ指定　{{ register_form.recommended }}</label>
+      </div>
+
+      <div style="margin-top: 28px;">
+        <button type="submit" class="btn btn-accent btn-full">登録する</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ============ 購入管理 ============ -->
+  <h2 class="section-title">購入管理</h2>
+
+  <!-- 購入の履歴検索 -->
+  <div class="card" style="margin-bottom: 24px;">
+    <form action="/shopapp/admin/" method="get">
+      <div class="search-form">
+        <div class="form-group">
+          <label class="form-label">会員ID</label>
+          <input type="text" name="user_id" value="{{ user_id }}" placeholder="例：user01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">注文ID</label>
+          <input type="number" name="purchase_id" value="{{ purchase_id }}" placeholder="例：1001">
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-bottom: 0; flex-shrink: 0;">検索</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 購入の一覧（キャンセル手続き） -->
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>注文ID</th>
+        <th>注文者</th>
+        <th>配送先</th>
+        <th>注文日</th>
+        <th>状態</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for purchase in purchases %}
+      <tr>
+        <td>{{ purchase.purchase_id }}</td>
+        <td>{{ purchase.user.user_id }}（{{ purchase.user.name }}）</td>
+        <td>{{ purchase.destination }}</td>
+        <td>{{ purchase.booked_date|date:"Y/m/d H:i" }}</td>
+        <td>
+          {% if purchase.cancel %}
+            <span style="color: var(--error-500);">キャンセル済</span>
+          {% else %}
+            <span style="color: var(--success-500);">注文済</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if purchase.cancel %}
+            —
+          {% else %}
+            <form action="{% url 'shopapp:admin_purchase_cancel' purchase.purchase_id %}" method="POST" onsubmit="return confirm('この注文をキャンセルしますか？');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">キャンセル</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align:center; color:var(--ink-400); padding: 48px 16px;">
+          該当する購入履歴が見つかりませんでした。
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

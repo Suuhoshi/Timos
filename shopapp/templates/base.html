@@ -16,6 +16,7 @@
         <a href="/shopapp/" class="nav-link">商品を探す</a>
         <a href="/shopapp/cart" class="nav-link">カート</a>
         {% if request.session.is_login %}
+        <a href="/shopapp/favorite/" class="nav-link">♡ お気に入り</a>
           <a href="/shopapp/userinfo/" class="nav-link">{{ name }}さん</a>
           <a href="/shopapp/logout/" class="nav-link">ログアウト</a>
         {% else %}
