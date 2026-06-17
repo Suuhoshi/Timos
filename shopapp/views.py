@@ -319,7 +319,7 @@ def purchase_commit(request):
     destination = request.POST["destination"]
     purchase = Purchase()
     #--スペルミス------------------
-    purchase.parchase_id= 1
+    # purchase.parchase_id= 2
     #---------------------
     purchase.destination = destination
     purchase.user = user
