@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 # from django.views.generic import View
 from .forms import UserForm, RegisterUserForm, RegisterUpdateForm, AdminForm, ItemForm
-from .models import Category, Item, User, Itemsincart, Purchase, Admin
+from .models import Category, Item, User, Itemsincart, Purchase, Admin, Favorite
 from django.contrib.auth import logout
 
 
@@ -49,10 +49,19 @@ def search(request):
 
 
 def detail(request, item_id):
-    item=Item.objects.get(item_id=item_id)
-    context={
-        "item":item,
-        "range":range(1,item.stock+1)
+    item = Item.objects.get(item_id=item_id)
+    # ★ 追加：お気に入り状態チェック
+    is_favorite = False
+    user_id = request.session.get("user_id")
+    if user_id:
+        user = User.objects.get(user_id=user_id)
+        is_favorite = Favorite.objects.filter(user=user, item=item).exists()
+
+    context = {
+        "item": item,
+        "range": range(1, item.stock + 1),
+        "is_login": request.session.get("is_login", False),  # ★ 追加
+        "is_favorite": is_favorite,  # ★ 追加
     }
     return render(request, "itemDetail.html", context)
 
@@ -117,7 +126,6 @@ def cart(request):
     total = 0
     for cart in cart_list:
         total += cart.item.price*cart.amount
-
     error = request.session.pop("error",None)
     context = {
         "cart_list":cart_list,
@@ -169,13 +177,14 @@ def register_commit(request):
 
 
 def user_info(request):
-    user_id=request.session["user_id"]
+    user_id = request.session["user_id"]
     user = User.objects.get(user_id=user_id)
-    context={
-        "user":user,
+    purchases = Purchase.objects.filter(user_id=user_id)
+    context = {
+        "user": user,
+        "purchases": purchases,
     }
     return render(request, "userInfo.html", context)
-
 
 
 
@@ -290,17 +299,6 @@ def cart_update(request, pk):
         cart.amount = new_amount
         cart.save()
     return redirect("/shopapp/cart/")
-# def cart_update(request, pk):
-#     if request.method == "POST":
-#         cart = Itemsincart.objects.get(pk=pk)
-#         new_amount = int(request.POST.get("new_amount"))
-#         # item.amount = int(new_amount)
-#         # if new_amount > cart.item.stock:
-#         #     request.session["error"]=("在庫数をこえています")
-#         #     return redirect("/shopapp/cart/")
-#         cart.amount =new_amount
-#         cart.save()
-#     return redirect("/shopapp/cart/")
 
 
 
@@ -372,8 +370,52 @@ def purchase_commit(request):
         item = cart.item
         item.stock -= cart.amount
         item.save()
+    return redirect("/shopapp/cart/")
 
 
+
+
+def purchase(request):
+    user = User.objects.get(user_id=request.session["user_id"])
+    context = {
+        "user": user
+    }
+    return render(request, "purchase.html", context)
+
+
+
+def purchase_confirm(request):
+    destination = request.POST["destination"]
+    cash = request.POST["cash"]
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    total = 0
+    for cart in cart_list:
+        total += (cart.item.price*cart.amount)
+
+    context = {
+        "user": user,
+        "destination": destination,
+        "cash":cash,
+        "cart_list": cart_list,
+        "total": total,
+    }
+    return render(request, "purchase_confirm.html", context)
+
+
+
+def purchase_commit(request):
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+
+    destination = request.POST["destination"]
+    purchase = Purchase()
+    purchase.destination = destination
+    purchase.user = user
+    purchase.cancel = False
+    purchase.save()
     Itemsincart.objects.filter(user_id=user_id).delete()
     name=user.name
     context ={
@@ -532,3 +574,43 @@ def admin_purchase_cancel(request, purchase_id):
         purchase.cancel = True
         purchase.save()
     return redirect("/shopapp/admin/")
+
+# お気に入り追加
+def favorite_add(request, item_id):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("shopapp:login")
+
+    user = User.objects.get(user_id=user_id)
+    item = get_object_or_404(Item, pk=item_id)
+    Favorite.objects.get_or_create(user=user, item=item)
+
+    return redirect("shopapp:favorite_list")
+
+
+def favorite_remove(request, item_id):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("shopapp:login")
+
+    user = User.objects.get(user_id=user_id)
+    Favorite.objects.filter(user=user, item_id=item_id).delete()
+
+    return redirect("shopapp:favorite_list")
+
+
+def favorite_list(request):
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect("shopapp:login")
+
+    user = User.objects.get(user_id=user_id)
+    favorites = Favorite.objects.filter(user=user).select_related('item')
+
+    for fav in favorites:
+        fav.stock_range = range(1, fav.item.stock + 1)
+
+    context = {
+        "favorites": favorites,
+    }
+    return render(request, "favorite_list.html", context)

@@ -75,3 +75,16 @@ class Admin(models.Model):
     
     admin_id = models.CharField(verbose_name="管理者ID", max_length=128, primary_key=True)
     password = models.CharField(verbose_name="パスワード", max_length=256)
+
+
+class Favorite(models.Model):
+    class Meta:
+        db_table = "favorite"
+        unique_together = ('user', 'item')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return
