@@ -118,9 +118,11 @@ def cart(request):
     for cart in cart_list:
         total += cart.item.price*cart.amount
 
+    error = request.session.pop("error",None)
     context = {
         "cart_list":cart_list,
         "total":total,
+        "error":error,
         }
     return render(request, "cart.html", context)
 
@@ -270,14 +272,35 @@ def cart_delete(request, pk):
     return redirect("/shopapp/cart/")
 
 
-
 def cart_update(request, pk):
     if request.method == "POST":
-        item = Itemsincart.objects.get(pk=pk)
-        new_amount = request.POST.get("new_amount")
-        item.amount = int(new_amount)
-        item.save()
+        cart = Itemsincart.objects.get(pk=pk)
+        new_amount = int(request.POST.get("new_amount"))
+
+        same_items = Itemsincart.objects.filter(user=cart.user, item=cart.item)
+        total_amount = 0
+        for row in same_items:
+            total_amount += row.amount
+        total_amount -= cart.amount
+        total_amount += new_amount
+        if total_amount > cart.item.stock:
+            request.session["error"] = (f"{cart.item.name}の在庫数を超えています")
+            return redirect("/shopapp/cart/")
+
+        cart.amount = new_amount
+        cart.save()
     return redirect("/shopapp/cart/")
+# def cart_update(request, pk):
+#     if request.method == "POST":
+#         cart = Itemsincart.objects.get(pk=pk)
+#         new_amount = int(request.POST.get("new_amount"))
+#         # item.amount = int(new_amount)
+#         # if new_amount > cart.item.stock:
+#         #     request.session["error"]=("在庫数をこえています")
+#         #     return redirect("/shopapp/cart/")
+#         cart.amount =new_amount
+#         cart.save()
+#     return redirect("/shopapp/cart/")
 
 
 
@@ -318,11 +341,38 @@ def purchase_commit(request):
     user = User.objects.get(user_id=user_id)
 
     destination = request.POST["destination"]
+
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    for cart in cart_list:
+        total_amount = 0
+        same_items = Itemsincart.objects.filter(user=user,item=cart.item)
+
+        for row in same_items:
+            total_amount += row.amount
+
+        if total_amount > cart.item.stock:
+
+            context = {"error":f"{cart.item.item_name}の在庫が不足しています",
+                "user": user,
+                "destination": destination,
+                "cart_list": cart_list,}
+            return render(request,"purchase_confirm.html",context)
+        
     purchase = Purchase()
     purchase.destination = destination
     purchase.user = user
     purchase.cancel = False
     purchase.save()
+
+    
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    for cart in cart_list:
+        item = cart.item
+        item.stock -= cart.amount
+        item.save()
+
 
     Itemsincart.objects.filter(user_id=user_id).delete()
     name=user.name
