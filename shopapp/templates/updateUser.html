@@ -1,45 +1,49 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-    <title>会員情報</title>
-    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-</head>
+{% extends 'base.html' %}
+{% block title %}会員情報の変更{% endblock %}
 
-<body>
-    <h2>会員情報</h2>
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">MY ACCOUNT</p>
+  <h1 class="page-title">会員情報の変更</h1>
+
+  <div class="card">
     <form action="/shopapp/updateUserConfirm/" method="post">
-    <table border="1">
-        <tr>
-            <th>会員ID</th>
-            <td><input type="text" name="user_id" value="{{ user.user_id }}" readonly></td>
-        </tr>
-        <tr>
-            <th>パスワード</th>
-            <td>{{ form.password }}</td>
-        </tr>
-        <tr>
-            <th>パスワード（確認）</th>
-            <td>{{ form.password_confirm }}</td>
-        </tr>
-        <tr>
-            <th>お名前</th>
-            <td>{{ form.name }}</td>
-        </tr>
-        <tr>
-            <th>ご住所</th>
-            <td>{{ form.address }}</td>
-        </tr>
-        <tr>
-            <td colspan="2"><button type="submit">変更確認</button></td>
-        </tr>
-    </table>
+      {% csrf_token %}
 
-    {{errors}}
-</form>
+      {% if errors %}
+        <div class="alert alert-error">{{ errors }}</div>
+      {% endif %}
 
-<br>
-    <a href="/shopapp/deleteConfirm/">退会する</a><br><br>
-    <a href="">購入履歴（任意機能）へ</a><br>
-    <a href="/shopapp/">商品検索へ</a><br>
+      <div class="form-group">
+        <label class="form-label">会員ID</label>
+        <input type="text" name="user_id" value="{{ user.user_id }}" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">新しいパスワード</label>
+        {{ form.password }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">新しいパスワード（確認）</label>
+        {{ form.password_confirm }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">お名前</label>
+        {{ form.name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">ご住所</label>
+        {{ form.address }}
+      </div>
 
-</body>
+      <div style="margin-top: 28px;">
+        <button type="submit" class="btn btn-primary btn-full">変更内容を確認する</button>
+      </div>
+    </form>
+  </div>
+
+  <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+    <a href="/shopapp/" class="back-link" style="margin-top: 0;">商品検索へ戻る</a>
+    <a href="/shopapp/deleteConfirm/" class="btn btn-danger btn-sm">退会する</a>
+  </div>
+</div>
+{% endblock %}

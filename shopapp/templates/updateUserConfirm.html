@@ -1,44 +1,40 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-    <title>会員情報の更新</title>
-    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-</head>
+{% extends 'base.html' %}
+{% block title %}変更内容の確認{% endblock %}
 
-<body>
-    <h2>以下の会員情報で更新しますか？</h2>
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">CONFIRM</p>
+  <h1 class="page-title">変更内容の確認</h1>
 
-    <table border="1">
-        <tr>
-            <th>会員ID</th>
-            <td>{{ user.user_id }}</td>
-        </tr>
-        <tr>
-            <th>パスワード</th>
-            <td>●●●●●●</td>
-        </tr>
-        <tr>
-            <th>お名前</th>
-            <td>{{ form.name.value }}</td>
-        </tr>
-        <tr>
-            <th>ご住所</th>
-            <td>{{ form.address.value }}</td>
-        </tr>
+  <div class="card" style="margin-bottom: 24px;">
+    <ul class="info-list">
+      <li>
+        <span class="info-label">会員ID</span>
+        <span class="info-value">{{ user.user_id }}</span>
+      </li>
+      <li>
+        <span class="info-label">パスワード</span>
+        <span class="info-value">●●●●●●</span>
+      </li>
+      <li>
+        <span class="info-label">お名前</span>
+        <span class="info-value">{{ form.name.value }}</span>
+      </li>
+      <li>
+        <span class="info-label">ご住所</span>
+        <span class="info-value">{{ form.address.value }}</span>
+      </li>
+    </ul>
+  </div>
 
+  <form action="/shopapp/updateUserCommit/" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="password" value="{{ form.password.value }}">
+    <input type="hidden" name="name" value="{{ form.name.value }}">
+    <input type="hidden" name="address" value="{{ form.address.value }}">
+    <button type="submit" class="btn btn-accent btn-full">変更を確定する</button>
+  </form>
 
-        <form action="/shopapp/updateUserCommit/" method="POST">
-        <input type="hidden" name="password" value="{{ form.password.value }}">
-        <input type="hidden" name="name" value="{{ form.name.value }}">
-        <input type="hidden" name="address" value="{{ form.address.value }}">
-        
-        <tr>
-            <td colspan="2"><button type="submit">変更確定</button></td>
-        </tr>
-        </form>
-    </table>
-
-
-    <br><br>
-    <a href="/shopapp/">商品検索へ</a>
-</body>
+  <a href="/shopapp/updateUser/" class="back-link">入力へ戻る</a>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 # from django.views.generic import View
-from .forms import UserForm, RegisterUserForm, RegisterUpdateForm
-from .models import Category, Item, User, Itemsincart
+from .forms import UserForm, RegisterUserForm, RegisterUpdateForm, AdminForm, ItemForm
+from .models import Category, Item, User, Itemsincart, Purchase, Admin
 from django.contrib.auth import logout
 
 
@@ -280,3 +280,158 @@ def cart_update(request, pk):
         item.amount = int(new_amount)
         item.save()
     return redirect("/shopapp/cart/")
+
+
+
+#管理者機能----------------------------
+def admin_login(request):
+    if request.session.get('is_admin_login', None):
+        return redirect('/shopapp/admin/')
+    if request.method == 'POST':
+        admin_form = AdminForm(request.POST)
+        message = "入力した内容を再度確認してください"
+
+        if admin_form.is_valid():
+            admin_id = admin_form.cleaned_data.get("id")
+            password = admin_form.cleaned_data.get("password")
+            try:
+                admin = Admin.objects.get(admin_id=admin_id)
+            except:
+                message = "管理者が存在しません"
+                return render(request, "adminLogin.html", locals())
+
+            if admin.password == password:
+                request.session['is_admin_login'] = True
+                request.session['admin_id'] = admin.admin_id
+                return redirect('/shopapp/admin/')
+            else:
+                message = 'パスワードが正しくありません。'
+                return render(request, "adminLogin.html", locals())
+        else:
+            return render(request, "adminLogin.html", locals())
+    admin_form = AdminForm()
+    return render(request, "adminLogin.html", locals())
+
+
+def admin_main(request):
+    if not request.session.get('is_admin_login'):
+        return redirect('/shopapp/admin/login/')
+
+    # 商品の検索
+    category_id = request.GET.get("category_id")
+    keyword = request.GET.get("keyword")
+
+    items = Item.objects.all().order_by("item_id")
+    if category_id and category_id != "0":
+        items = items.filter(category__category_id=category_id)
+    if keyword:
+        items = items.filter(name__icontains=keyword)
+    else:
+        keyword
+
+    # 購入の履歴検索
+    user_id = request.GET.get("user_id")
+    purchase_id = request.GET.get("purchase_id")
+
+    purchases = Purchase.objects.all().order_by("parchase_id")
+    if user_id:
+        purchases = purchases.filter(user__user_id__icontains=user_id)
+    if purchase_id:
+        purchases = purchases.filter(parchase_id=purchase_id)
+
+    categories = Category.objects.all().order_by("category_id")
+
+    context = {
+        "admin_id": request.session.get('admin_id'),
+        "items": items,
+        "purchases": purchases,
+        "categories": categories,
+        "register_form": ItemForm(),
+        "category_id": category_id,
+        "keyword": keyword or "",
+        "user_id": user_id,
+        "purchase_id": purchase_id or "",
+    }
+    return render(request, "adminMain.html", context)
+
+
+def admin_logout(request):
+    request.session.pop('is_admin_login', None)
+    request.session.pop('admin_id', None)
+    return redirect("/shopapp/admin/login/")
+
+
+def admin_item_register(request):
+    if not request.session.get('is_admin_login'):
+        return redirect('/shopapp/admin/login/')
+
+    if request.method == "POST":
+        form = ItemForm(request.POST)
+        register_errors = None
+
+        if form.is_valid():
+            item_id = form.cleaned_data.get("item_id")
+            if Item.objects.filter(item_id=item_id).exists():
+                register_errors = "この商品IDは既に使用されています"
+            else:
+                item = Item(
+                    item_id=item_id,
+                    name=form.cleaned_data.get("name"),
+                    manufacturer=form.cleaned_data.get("manufacturer"),
+                    color=form.cleaned_data.get("color"),
+                    price=form.cleaned_data.get("price"),
+                    stock=form.cleaned_data.get("stock"),
+                    recommended=form.cleaned_data.get("recommended"),
+                    category=form.cleaned_data.get("category"),
+                )
+                item.save()
+                return redirect("/shopapp/admin/")
+        else:
+            register_errors = form.errors
+
+        context = {
+            "admin_id": request.session.get('admin_id'),
+            "items": Item.objects.all().order_by("item_id"),
+            "purchases": Purchase.objects.all().order_by("parchase_id"),
+            "categories": Category.objects.all().order_by("category_id"),
+            "register_form": form,
+            "register_errors": register_errors,
+        }
+        return render(request, "adminMain.html", context)
+
+    return redirect("/shopapp/admin/")
+
+
+def admin_item_update(request, item_id):
+    if not request.session.get('is_admin_login'):
+        return redirect('/shopapp/admin/login/')
+
+    if request.method == "POST":
+        item = Item.objects.get(item_id=item_id)
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            item.name = form.cleaned_data.get("name")
+            item.manufacturer = form.cleaned_data.get("manufacturer")
+            item.color = form.cleaned_data.get("color")
+            item.price = form.cleaned_data.get("price")
+            item.stock = form.cleaned_data.get("stock")
+            item.recommended = form.cleaned_data.get("recommended")
+            item.category = form.cleaned_data.get("category")
+            item.save()
+    return redirect("/shopapp/admin/")
+
+
+def admin_item_delete(request, item_id):
+    if request.method == "POST":
+        item = Item.objects.get(item_id=item_id)
+        item.delete()
+    return redirect("/shopapp/admin/")
+
+
+def admin_purchase_cancel(request, parchase_id):
+    if request.method == "POST":
+        purchase = Purchase.objects.get(parchase_id=parchase_id)
+        purchase.cancel = True
+        purchase.save()
+    return redirect("/shopapp/admin/")
+

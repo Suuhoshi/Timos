@@ -1,34 +1,27 @@
-<!DOCTYPE html>
-<head>
-    <title>商品検索</title>
-</head>
-<body>
-    <h2>商品の検索を行います。</h2>
-    <form action="search", method="get">
-        <label>カテゴリ：</label>
+{% extends 'base.html' %}
+{% block title %}商品検索{% endblock %}
+
+{% block content %}
+<div class="container">
+  <p class="page-eyebrow">SEARCH</p>
+  <h1 class="page-title">商品を探す</h1>
+
+  <form action="search" method="get">
+    <div class="search-form">
+      <div class="form-group">
+        <label class="form-label">カテゴリ</label>
         <select name="category_id">
-        {% for category in categories%}
-                <option value="{{category.category_id}}">{{category.name}}</option>
-        {% endfor %}
+          {% for category in categories %}
+            <option value="{{ category.category_id }}">{{ category.name }}</option>
+          {% endfor %}
         </select>
-            キーワード：<input type="text", name ="keyword">
-            <button type="submit">検索</button>
-
-            <br><br>
-            <a href="cart">ショッピングカートを見る</a><br><br>
-            <a href="">購入履歴（任意機能）</a><br><br><br>
-
-            {% if request.session.is_login %}
-            ようこそ {{name}}さん<br>
-            <a href="/shopapp/userinfo/">会員情報の確認</a><br>
-            <a href="/shopapp/updateUser/">会員情報の変更</a><br>
-            <a href="/shopapp/logout/">ログアウト</a><br>
-
-            {% else %}
-            <a href="/shopapp/login">ログイン</a><br><br>
-            {% endif %}
-
-            <a href="">管理者ページ（任意機能）</a><br>
-    </form>
-
-</body>
+      </div>
+      <div class="form-group">
+        <label class="form-label">キーワード</label>
+        <input type="text" name="keyword" placeholder="例：麦わら帽子">
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-bottom: 0; flex-shrink: 0;">検索</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

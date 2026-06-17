@@ -1,31 +1,43 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-    <title>検索結果</title>
-    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-</head>
+{% extends 'base.html' %}
+{% block title %}検索結果{% endblock %}
 
-<body>
-    <h2>キーワード"{{ keyword }}" カテゴリ"{{ category_name }}"の検索結果</h2> 
+{% block content %}
+<div class="container">
+  <p class="page-eyebrow">SEARCH RESULTS</p>
+  <h1 class="page-title">検索結果</h1>
 
-    <table border="1">
-        <tr>
-            <th>商品名</th>
-            <th>商品の色</th>
-            <th>メーカー名</th>
-            <th>価格</th>
-        </tr>
+  <p class="result-meta">
+    キーワード「<strong>{{ keyword }}</strong>」
+    カテゴリ「<strong>{{ category_name }}</strong>」の検索結果
+  </p>
 
-        {% for item in items%}
-        <tr>
-            <td><a href="{%url 'shopapp:detail' item.item_id%}">{{ item.name }}</a></td>
-            <td>{{ item.color }}</td>
-            <td>{{ item.manufacturer }}</td>
-            <td>{{ item.price }}円</td>
-        </tr>
-        {% endfor %}
-    </table>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>商品名</th>
+        <th>色</th>
+        <th>メーカー</th>
+        <th>価格</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td><a href="{% url 'shopapp:detail' item.item_id %}" class="result-link">{{ item.name }}</a></td>
+        <td>{{ item.color }}</td>
+        <td>{{ item.manufacturer }}</td>
+        <td>¥{{ item.price|floatformat:"0" }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="text-align:center; color:var(--ink-400); padding: 48px 16px;">
+          該当する商品が見つかりませんでした。
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-    <br>
-    <a href="/shopapp/">商品検索へ</a>
-</body>
+  <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
+</div>
+{% endblock %}

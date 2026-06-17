@@ -1,38 +1,35 @@
-{% load static %}
-<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block title %}会員情報{% endblock %}
 
-<html lang="ja">
-    <head>
-        <meta charset="UTF-8" />
-        <title>会員情報の確認</title>
-        <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-    </head>
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">MY ACCOUNT</p>
+  <h1 class="page-title">会員情報</h1>
 
-    <body>
-        <h2>
-            会員情報
-        </h2>
-        <table border="1">
-            <tr>
-                <th>会員ID</th>
-                <td>{{user.user_id}}</td>
-            </tr>
-            <tr>
-                <th>パスワード</th>
-                <td>表示なし</td>
-            </tr>
-            <tr>
-                <th>お名前</th>
-                <td>{{user.name}}</td>
-            </tr>
-            <tr>
-                <th>ご住所</th>
-                <td>{{user.address}}</td>
-            </tr>
+  <div class="card" style="margin-bottom: 32px;">
+    <ul class="info-list">
+      <li>
+        <span class="info-label">会員ID</span>
+        <span class="info-value">{{ user.user_id }}</span>
+      </li>
+      <li>
+        <span class="info-label">パスワード</span>
+        <span class="info-value">表示なし</span>
+      </li>
+      <li>
+        <span class="info-label">お名前</span>
+        <span class="info-value">{{ user.name }}</span>
+      </li>
+      <li>
+        <span class="info-label">ご住所</span>
+        <span class="info-value">{{ user.address }}</span>
+      </li>
+    </ul>
+  </div>
 
-        </table>
-
-        <br>
-        <a href="/shopapp/updateUser/">会員情報の変更</a><br>
-        <a href="/shopapp/">商品検索へ</a>
-    </body>
+  <div class="action-group">
+    <a href="/shopapp/updateUser/" class="btn btn-primary">会員情報を変更する</a>
+    <a href="/shopapp/" class="btn btn-secondary">商品検索へ</a>
+  </div>
+</div>
+{% endblock %}

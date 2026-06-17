@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Timos{% endblock %} — 帽子と鞄</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/shopapp/" class="wordmark">Timos<span class="wordmark-dot">.</span></a>
+      <nav class="site-nav">
+        <a href="/shopapp/" class="nav-link">商品を探す</a>
+        <a href="/shopapp/cart" class="nav-link">カート</a>
+        {% if request.session.is_login %}
+          <a href="/shopapp/userinfo/" class="nav-link">{{ name }}さん</a>
+          <a href="/shopapp/logout/" class="nav-link">ログアウト</a>
+        {% else %}
+          <a href="/shopapp/login" class="nav-link">ログイン</a>
+          <a href="/shopapp/register/" class="nav-link nav-accent">会員登録</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="footer-wordmark">Timos<span class="wordmark-dot">.</span></span>
+      <p class="footer-tagline">確かな手仕事の、帽子と鞄。</p>
+    </div>
+  </footer>
+
+</body>
+</html>

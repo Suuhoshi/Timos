@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>ランディングページ</title>
-</head>
-<body>
-    <h1>ようこそ</h1>
+{% extends 'base.html' %}
+{% block title %}ようこそ{% endblock %}
 
-    <a href="/shopapp/">トップページへ</a>
-</body>
-</html>
+{% block content %}
+<div class="hero">
+  <p class="hero-eyebrow">Timos</p>
+  <h1 class="hero-title">確かな手仕事の、<br>帽子と鞄。</h1>
+  <p class="hero-sub">職人がひとつずつ仕立てました。<br>長く使える、静かな道具を。</p>
+  <a href="/shopapp/" class="btn btn-primary">コレクションを見る</a>
+</div>
+{% endblock %}
