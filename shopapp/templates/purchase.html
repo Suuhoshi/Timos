@@ -1,28 +1,38 @@
-<h2>配送先情報入力</h2>
+{% extends 'base.html' %}
+{% block title %}配送先情報の入力{% endblock %}
 
-<form action="/shopapp/purchaseConfirm/" method="post">
-{% csrf_token %}
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">CHECKOUT</p>
+  <h1 class="page-title">配送先情報の入力</h1>
 
-<table border="1">
-<tr>
-    <th>会員ID</th>
-    <td>{{ user.user_id }}</td>
-</tr>
-<tr>
-    <th>お名前</th>
-    <td>{{ user.name }}</td>
-</tr>
-<tr>
-    <th>配送先</th>
-    <td><input type="text" name="destination" value="{{ user.address }}"></td>
-</tr>
-<tr>
-    <th>決済方法</th>
-    <td><select name="cash"><option value="代金引換">代金引換</option></select></td>
-</tr>
-</table>
+  <form action="/shopapp/purchaseConfirm/" method="post">
+    {% csrf_token %}
 
-<br>
-<input type="submit" value="確認">
+    <div class="card" style="margin-bottom: 28px;">
+      <div class="form-group">
+        <label class="form-label">会員ID</label>
+        <p class="info-value" style="padding: 4px 0;">{{ user.user_id }}</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">お名前</label>
+        <p class="info-value" style="padding: 4px 0;">{{ user.name }}</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">配送先</label>
+        <input type="text" name="destination" value="{{ user.address }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">決済方法</label>
+        <select name="cash">
+          <option value="代金引換">代金引換</option>
+        </select>
+      </div>
+    </div>
 
-</form>
+    <button type="submit" class="btn btn-primary btn-full">購入内容を確認する</button>
+  </form>
+
+  <a href="/shopapp/cart" class="back-link">カートへ戻る</a>
+</div>
+{% endblock %}
