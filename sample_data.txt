@@ -17,3 +17,19 @@ INSERT INTO account_user (user_id, password, name, address) VALUES
 ('user01', '01', '一郎', '東京都1'),
 ('user02', '02', '二郎', '東京都2'),
 ('user03', '03', '三郎', '東京都3');
+
+
+INSERT INTO shopping_purchase (destination, booked_date, cancel, user_id) VALUES
+('イギリス中央区', NOW(), 0, 'user01'),
+('アメリカ南東部', NOW(), 0, 'user01'),
+('フィンランド北極部', NOW(), 1, 'user01'),
+('インド海', NOW(), 0, 'user02'),
+('ブラジル共和国', NOW(), 1, 'user02');
+
+
+
+
+
+
+
+
