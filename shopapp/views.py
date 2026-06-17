@@ -365,7 +365,7 @@ def purchase_commit(request):
     purchase.cancel = False
     purchase.save()
 
-    
+
     cart_list = Itemsincart.objects.filter(user=user)
 
     for cart in cart_list:
