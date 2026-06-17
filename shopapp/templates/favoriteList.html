@@ -29,7 +29,7 @@
             <form action="/shopapp/cart/" method="post" style="display: flex; align-items: center; gap: 8px;">
               {% csrf_token %}
               <input type="hidden" name="item_id" value="{{ fav.item.item_id }}">
-              <select name="amount" class="qty-input">
+              <select name="amount" style="width: 70px;">
                 {% for i in fav.stock_range %}
                   <option value="{{ i }}">{{ i }}</option>
                 {% endfor %}
