@@ -48,19 +48,14 @@
     </tbody>
   </table>
 
-<<<<<<< HEAD
-</table>
-<br>
-合計 {{total}}円
-<br>
-<button>購入する</button>
-<hr>
-=======
+
+
   <div class="cart-footer">
     <span class="cart-total-label">合計</span>
     <span class="cart-total-amount">¥{{ total|floatformat:"0" }}</span>
   </div>
->>>>>>> 61ca9ad521a39cd002179f1d16e2e99e82b989a9
+  <form action="/shopapp/purchase" method ="get"><input type="submit" value="購入する"></form>
+  <br>
 
   <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
 </div>

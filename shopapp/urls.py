@@ -22,6 +22,10 @@ urlpatterns =[
     #任意機能-----------------
     path('cart/delete/<int:pk>', views.cart_delete, name="cart_delete"),
     path('cart/update/<int:pk>', views.cart_update, name="cart_update"),
+    path('purchase/', views.purchase, name="purchase"),
+    path('purchaseConfirm/', views.purchase_confirm, name="purchase_confirm"),
+    path("purchaseCommit/", views.purchase_commit, name="purchase_commit"),
+
 ]
 
 

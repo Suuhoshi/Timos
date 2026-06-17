@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 # from django.views.generic import View
 from .forms import UserForm, RegisterUserForm, RegisterUpdateForm
-from .models import Category, Item, User, Itemsincart
+from .models import Category, Item, User, Itemsincart, Purchase
 from django.contrib.auth import logout
 
 
@@ -118,11 +118,9 @@ def cart(request):
     for cart in cart_list:
         total += cart.item.price*cart.amount
 
-    # items = Item.objects.get(cart_list = cart_list)
     context = {
         "cart_list":cart_list,
         "total":total,
-        # "range":range(1,items.stock+1)
         }
     return render(request, "cart.html", context)
 
@@ -280,3 +278,57 @@ def cart_update(request, pk):
         item.amount = int(new_amount)
         item.save()
     return redirect("/shopapp/cart/")
+
+
+
+def purchase(request):
+    user = User.objects.get(user_id=request.session["user_id"])
+    context = {
+        "user": user
+    }
+    return render(request, "purchase.html", context)
+
+
+
+def purchase_confirm(request):
+    destination = request.POST["destination"]
+    cash = request.POST["cash"]
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    total = 0
+    for cart in cart_list:
+        total += (cart.item.price*cart.amount)
+
+    context = {
+        "user": user,
+        "destination": destination,
+        "cash":cash,
+        "cart_list": cart_list,
+        "total": total,
+    }
+    return render(request, "purchase_confirm.html", context)
+
+
+
+def purchase_commit(request):
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+
+    destination = request.POST["destination"]
+    purchase = Purchase()
+    #--スペルミス------------------
+    purchase.parchase_id= 1
+    #---------------------
+    purchase.destination = destination
+    purchase.user = user
+    purchase.cancel = False
+    purchase.save()
+
+    Itemsincart.objects.filter(user_id=user_id).delete()
+    name=user.name
+    context ={
+        "name":name
+    }
+    return render(request, "purchase_commit.html", context)
