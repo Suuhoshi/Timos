@@ -33,6 +33,10 @@ urlpatterns =[
     path('admin/item/update/<int:item_id>/', views.admin_item_update, name="admin_item_update"),
     path('admin/item/delete/<int:item_id>/', views.admin_item_delete, name="admin_item_delete"),
     path('admin/purchase/cancel/<int:purchase_id>/', views.admin_purchase_cancel, name="admin_purchase_cancel"),
+    # お気に入り機能
+    path('favorite/', views.favorite_list, name='favorite_list'),
+    path('favorite/add/<int:item_id>/', views.favorite_add, name='favorite_add'),
+    path('favorite/remove/<int:item_id>/', views.favorite_remove, name='favorite_remove'),
 ]
 
 
