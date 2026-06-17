@@ -330,7 +330,7 @@ def purchase_confirm(request):
         "cart_list": cart_list,
         "total": total,
     }
-    return render(request, "purchase_confirm.html", context)
+    return render(request, "purchaseConfirm.html", context)
 
 
 
@@ -355,7 +355,7 @@ def purchase_commit(request):
                 "user": user,
                 "destination": destination,
                 "cart_list": cart_list,}
-            return render(request,"purchase_confirm.html",context)
+            return render(request,"purchaseConfirm.html",context)
         
     purchase = Purchase()
     purchase.destination = destination
@@ -363,7 +363,7 @@ def purchase_commit(request):
     purchase.cancel = False
     purchase.save()
 
-    
+
     cart_list = Itemsincart.objects.filter(user=user)
 
     for cart in cart_list:
@@ -402,7 +402,7 @@ def purchase_confirm(request):
         "cart_list": cart_list,
         "total": total,
     }
-    return render(request, "purchase_confirm.html", context)
+    return render(request, "purchaseConfirm.html", context)
 
 
 
@@ -421,7 +421,7 @@ def purchase_commit(request):
     context ={
         "name":name
     }
-    return render(request, "purchase_commit.html", context)
+    return render(request, "purchaseCommit.html", context)
   
 #管理者機能----------------------------
 def admin_login(request):
