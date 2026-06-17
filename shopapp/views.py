@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 # from django.views.generic import View
-
 from .forms import UserForm, RegisterUserForm, RegisterUpdateForm, AdminForm, ItemForm
 from .models import Category, Item, User, Itemsincart, Purchase, Admin
 from django.contrib.auth import logout
@@ -320,9 +319,6 @@ def purchase_commit(request):
 
     destination = request.POST["destination"]
     purchase = Purchase()
-    #--スペルミス------------------
-    # purchase.parchase_id= 2
-    #---------------------
     purchase.destination = destination
     purchase.user = user
     purchase.cancel = False
@@ -385,11 +381,11 @@ def admin_main(request):
     user_id = request.GET.get("user_id")
     purchase_id = request.GET.get("purchase_id")
 
-    purchases = Purchase.objects.all().order_by("parchase_id")
+    purchases = Purchase.objects.all().order_by("purchase_id")
     if user_id:
         purchases = purchases.filter(user__user_id__icontains=user_id)
     if purchase_id:
-        purchases = purchases.filter(parchase_id=purchase_id)
+        purchases = purchases.filter(purchase_id=purchase_id)
 
     categories = Category.objects.all().order_by("category_id")
 
@@ -444,7 +440,7 @@ def admin_item_register(request):
         context = {
             "admin_id": request.session.get('admin_id'),
             "items": Item.objects.all().order_by("item_id"),
-            "purchases": Purchase.objects.all().order_by("parchase_id"),
+            "purchases": Purchase.objects.all().order_by("purchase_id"),
             "categories": Category.objects.all().order_by("category_id"),
             "register_form": form,
             "register_errors": register_errors,
@@ -480,9 +476,9 @@ def admin_item_delete(request, item_id):
     return redirect("/shopapp/admin/")
 
 
-def admin_purchase_cancel(request, parchase_id):
+def admin_purchase_cancel(request, purchase_id):
     if request.method == "POST":
-        purchase = Purchase.objects.get(parchase_id=parchase_id)
+        purchase = Purchase.objects.get(purchase_id=purchase_id)
         purchase.cancel = True
         purchase.save()
     return redirect("/shopapp/admin/")

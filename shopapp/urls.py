@@ -32,7 +32,7 @@ urlpatterns =[
     path('admin/item/register/', views.admin_item_register, name="admin_item_register"),
     path('admin/item/update/<int:item_id>/', views.admin_item_update, name="admin_item_update"),
     path('admin/item/delete/<int:item_id>/', views.admin_item_delete, name="admin_item_delete"),
-    path('admin/purchase/cancel/<int:parchase_id>/', views.admin_purchase_cancel, name="admin_purchase_cancel"),
+    path('admin/purchase/cancel/<int:purchase_id>/', views.admin_purchase_cancel, name="admin_purchase_cancel"),
 ]
 
 

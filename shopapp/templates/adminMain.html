@@ -180,7 +180,7 @@
     <tbody>
       {% for purchase in purchases %}
       <tr>
-        <td>{{ purchase.parchase_id }}</td>
+        <td>{{ purchase.purchase_id }}</td>
         <td>{{ purchase.user.user_id }}（{{ purchase.user.name }}）</td>
         <td>{{ purchase.destination }}</td>
         <td>{{ purchase.booked_date|date:"Y/m/d H:i" }}</td>
@@ -195,7 +195,7 @@
           {% if purchase.cancel %}
             —
           {% else %}
-            <form action="{% url 'shopapp:admin_purchase_cancel' purchase.parchase_id %}" method="POST" onsubmit="return confirm('この注文をキャンセルしますか？');">
+            <form action="{% url 'shopapp:admin_purchase_cancel' purchase.purchase_id %}" method="POST" onsubmit="return confirm('この注文をキャンセルしますか？');">
               {% csrf_token %}
               <button type="submit" class="btn btn-danger btn-sm">キャンセル</button>
             </form>
