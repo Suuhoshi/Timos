@@ -1,14 +1,24 @@
-<!DOCTYPE html>
-<head>
-    <title>退会確認</title>
-</head>
+{% extends 'base.html' %}
+{% block title %}退会確認{% endblock %}
 
-<body>
-    <h2>{{ name }}さん、本当に退会しますか？</h2>
-    <form action="/shopapp/deleteAccount/" method="POST">
-        <button type="submit">退会</button>
-    </form>
+{% block content %}
+<div class="container-sm">
+  <p class="page-eyebrow">WITHDRAW</p>
+  <h1 class="page-title">退会の確認</h1>
 
-    <br>
-    <a href="/shopapp/">商品検索へ</a>
-</body>
+  <div class="zone-warning" style="margin-bottom: 28px;">
+    <p class="zone-warning-title">本当に退会しますか？</p>
+    <p style="font-size: 0.875rem; color: var(--ink-500); line-height: 1.7;">
+      {{ name }}さんのアカウントを削除します。<br>
+      この操作は取り消せません。
+    </p>
+  </div>
+
+  <form action="/shopapp/deleteAccount/" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-full" style="height:48px;">退会する</button>
+  </form>
+
+  <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
+</div>
+{% endblock %}

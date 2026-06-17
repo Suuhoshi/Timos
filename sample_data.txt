@@ -8,6 +8,7 @@ INSERT INTO shopping_category (category_id, name) VALUES
 INSERT INTO shopping_item (item_id, name, manufacturer, color, price, stock, recommended, category_id) VALUES
 (101, '麦わら帽子', '日本帽子製造所', '黄色', 5000, 12, TRUE, 1),
 (102, '子供よう麦わら帽子', '日本帽子製造所', '赤色', 3000, 10, TRUE, 1),
+
 (201, 'ハンドバック', '日本鞄製造所', '黒色', 6500, 12, TRUE, 2),
 (202, 'ショルダーバック', '日本鞄製造所', '白色', 3500, 10, TRUE, 2);
 

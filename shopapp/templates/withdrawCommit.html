@@ -1,11 +1,15 @@
-<!DOCTYPE html>
-<head>
-    <title>退会完了</title>
-</head>
+{% extends 'base.html' %}
+{% block title %}退会完了{% endblock %}
 
-<body>
-    <h2>{{ name }}さん、退会処理を完了しました。</h2>
-    <h2>またのご利用をお待ちしております</h2>
-
-    <a href="/shopapp/">TOPへ</a>
-</body>
+{% block content %}
+<div class="container-sm" style="text-align: center; padding-top: 48px;">
+  <h1 class="page-title" style="margin-bottom: 12px;">退会が完了しました</h1>
+  <p style="color: var(--ink-400); margin-bottom: 8px;">
+    {{ name }}さん、退会処理を完了しました。
+  </p>
+  <p style="color: var(--ink-400); margin-bottom: 40px;">
+    またのご利用をお待ちしております。
+  </p>
+  <a href="/shopapp/" class="btn btn-primary">トップへ戻る</a>
+</div>
+{% endblock %}

@@ -1,52 +1,45 @@
-{% load static %}
-<!DOCTYPE html>
-<head>
-    <title>商品詳細</title>
-    <link rel="stylesheet" type='text/css' href="{% static 'style.css' %}"/>
-</head>
+{% extends 'base.html' %}
+{% block title %}{{ item.name }}{% endblock %}
 
+{% block content %}
+<div class="container-md">
+  <p class="page-eyebrow">ITEM DETAIL</p>
+  <h1 class="product-name">{{ item.name }}</h1>
+  <p class="product-price">¥{{ item.price|floatformat:"0" }}</p>
 
-<body>
-    <h2>商品の詳細表示</h2>
-
-    <table border="1">
-        <tr>
-            <th>商品名</th>
-            <td>{{ item.name }}</td>
-        </tr>
-        <tr>
-            <th>商品の色</th>
-            <td>{{ item.color }}</td>
-        </tr>
-        <tr>
-            <th>メーカー名</th>
-            <td>{{ item.manufacturer }}</td>
-        </tr>
-        <tr>
-            <th>価格</th>
-            <td>{{ item.price }}円</td>
-        </tr>
-        <tr>
-            <th>在庫数</th>
-            <td>{{ item.stock }}個</td>
-        </tr>
+  <div class="card" style="margin-bottom: 32px;">
+    <table class="detail-table">
+      <tr>
+        <th>色</th>
+        <td>{{ item.color }}</td>
+      </tr>
+      <tr>
+        <th>メーカー</th>
+        <td>{{ item.manufacturer }}</td>
+      </tr>
+      <tr>
+        <th>在庫数</th>
+        <td>{{ item.stock }}個</td>
+      </tr>
     </table>
+  </div>
 
-    <br>
-
-    <form action="/shopapp/cart/" method="post">
-        数量
-        <select name="amount">
-            {% for i in range %}
-                <option value="{{i}}">{{i}}</option>
-            {% endfor %}
+  <form action="/shopapp/cart/" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="item_id" value="{{ item.item_id }}">
+    <div class="action-group">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">数量</label>
+        <select name="amount" style="width: 100px;">
+          {% for i in range %}
+            <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
         </select>
-        <input type="hidden" name="item_id" value="{{ item.item_id }}">
-        <button type="submit">ショッピングカートに入れる</button>
-    </form>
+      </div>
+      <button type="submit" class="btn btn-accent" style="align-self: flex-end;">カートに入れる</button>
+    </div>
+  </form>
 
-
-    <br>
-    <a href="/shopapp/">商品検索へ</a>
-
-</body>
+  <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
+</div>
+{% endblock %}
