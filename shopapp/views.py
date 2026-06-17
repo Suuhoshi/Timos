@@ -613,4 +613,4 @@ def favorite_list(request):
     context = {
         "favorites": favorites,
     }
-    return render(request, "favorite_list.html", context)
+    return render(request, "favoriteList.html", context)
