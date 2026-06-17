@@ -1,3 +1,14 @@
-<h2>
-    {{name}}さんご購入ありがとうございました！
-</h2>
+{% extends 'base.html' %}
+{% block title %}ご購入ありがとうございました{% endblock %}
+
+{% block content %}
+<div class="container-sm" style="text-align: center; padding-top: 48px;">
+  <div class="success-icon">✓</div>
+  <h1 class="page-title" style="margin-bottom: 12px;">ご注文ありがとうございました</h1>
+  <p style="color: var(--ink-400); margin-bottom: 40px;">
+    {{ name }}さん、ご購入ありがとうございました。<br>
+    商品のお届けまで、いましばらくお待ちください。
+  </p>
+  <a href="/shopapp/" class="btn btn-primary">買い物を続ける</a>
+</div>
+{% endblock %}

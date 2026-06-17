@@ -126,10 +126,11 @@ def cart(request):
     total = 0
     for cart in cart_list:
         total += cart.item.price*cart.amount
-
+    error = request.session.pop("error",None)
     context = {
         "cart_list":cart_list,
         "total":total,
+        "error":error,
         }
     return render(request, "cart.html", context)
 
@@ -280,12 +281,94 @@ def cart_delete(request, pk):
     return redirect("/shopapp/cart/")
 
 
-
 def cart_update(request, pk):
     if request.method == "POST":
-        item = Itemsincart.objects.get(pk=pk)
-        new_amount = request.POST.get("new_amount")
-        item.amount = int(new_amount)
+        cart = Itemsincart.objects.get(pk=pk)
+        new_amount = int(request.POST.get("new_amount"))
+
+        same_items = Itemsincart.objects.filter(user=cart.user, item=cart.item)
+        total_amount = 0
+        for row in same_items:
+            total_amount += row.amount
+        total_amount -= cart.amount
+        total_amount += new_amount
+        if total_amount > cart.item.stock:
+            request.session["error"] = (f"{cart.item.name}の在庫数を超えています")
+            return redirect("/shopapp/cart/")
+
+        cart.amount = new_amount
+        cart.save()
+    return redirect("/shopapp/cart/")
+
+
+
+
+def purchase(request):
+    user = User.objects.get(user_id=request.session["user_id"])
+    context = {
+        "user": user
+    }
+    return render(request, "purchase.html", context)
+
+
+
+def purchase_confirm(request):
+    destination = request.POST["destination"]
+    cash = request.POST["cash"]
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    total = 0
+    for cart in cart_list:
+        total += (cart.item.price*cart.amount)
+
+    context = {
+        "user": user,
+        "destination": destination,
+        "cash":cash,
+        "cart_list": cart_list,
+        "total": total,
+    }
+    return render(request, "purchase_confirm.html", context)
+
+
+
+def purchase_commit(request):
+    user_id=request.session["user_id"]
+    user = User.objects.get(user_id=user_id)
+
+    destination = request.POST["destination"]
+
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    for cart in cart_list:
+        total_amount = 0
+        same_items = Itemsincart.objects.filter(user=user,item=cart.item)
+
+        for row in same_items:
+            total_amount += row.amount
+
+        if total_amount > cart.item.stock:
+
+            context = {"error":f"{cart.item.item_name}の在庫が不足しています",
+                "user": user,
+                "destination": destination,
+                "cart_list": cart_list,}
+            return render(request,"purchase_confirm.html",context)
+        
+    purchase = Purchase()
+    purchase.destination = destination
+    purchase.user = user
+    purchase.cancel = False
+    purchase.save()
+
+    
+    cart_list = Itemsincart.objects.filter(user=user)
+
+    for cart in cart_list:
+        item = cart.item
+        item.stock -= cart.amount
         item.save()
     return redirect("/shopapp/cart/")
 
@@ -333,7 +416,6 @@ def purchase_commit(request):
     purchase.user = user
     purchase.cancel = False
     purchase.save()
-
     Itemsincart.objects.filter(user_id=user_id).delete()
     name=user.name
     context ={
@@ -492,7 +574,6 @@ def admin_purchase_cancel(request, purchase_id):
         purchase.cancel = True
         purchase.save()
     return redirect("/shopapp/admin/")
-
 
 # お気に入り追加
 def favorite_add(request, item_id):

@@ -1,27 +1,58 @@
-<h2>購入確認画面</h2>
+{% extends 'base.html' %}
+{% block title %}購入の確認{% endblock %}
 
-注文者：{{ user.name }}<br>
-配送先：{{ destination }}<br>
+{% block content %}
+<div class="container-md">
+  <p class="page-eyebrow">CONFIRM</p>
+  <h1 class="page-title">購入の確認</h1>
 
-<table border="1">
-<tr>
-    <th>商品名</th>
-    <th>数量</th>
-    <th>単価</th>
-</tr>
+  <div class="card-sm" style="margin-bottom: 24px;">
+    <ul class="info-list">
+      <li>
+        <span class="info-label">注文者</span>
+        <span class="info-value">{{ user.name }}</span>
+      </li>
+      <li>
+        <span class="info-label">配送先</span>
+        <span class="info-value">{{ destination }}</span>
+      </li>
+      <li>
+        <span class="info-label">決済方法</span>
+        <span class="info-value">{{ cash }}</span>
+      </li>
+    </ul>
+  </div>
 
-{% for cart in cart_list %}
-<tr>
-    <td>{{ cart.item.name }}</td>
-    <td>{{ cart.amount }}</td>
-    <td>{{ cart.item.price }}円</td>
-</tr>
-{% endfor %}
-</table>
-合計 {{ total }}円　決済方法：{{ cash }}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>商品名</th>
+        <th>数量</th>
+        <th>単価</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cart in cart_list %}
+      <tr>
+        <td>{{ cart.item.name }}</td>
+        <td>{{ cart.amount }}個</td>
+        <td>¥{{ cart.item.price|floatformat:"0" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-<form action="/shopapp/purchaseCommit/" method="post">
-<input type="hidden" name="destination" value="{{ destination }}">
-<br>
-<input type="submit" value="購入確定">
-</form>
+  <div class="cart-footer">
+    <span class="cart-total-label">合計</span>
+    <span class="cart-total-amount">¥{{ total|floatformat:"0" }}</span>
+  </div>
+
+  <form action="/shopapp/purchaseCommit/" method="post" style="margin-top: 16px;">
+    {% csrf_token %}
+    <input type="hidden" name="destination" value="{{ destination }}">
+    <button type="submit" class="btn btn-accent btn-full">購入を確定する</button>
+  </form>
+
+  <a href="/shopapp/cart" class="back-link">カートへ戻る</a>
+</div>
+{% endblock %}

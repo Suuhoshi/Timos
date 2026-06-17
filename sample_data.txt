@@ -21,7 +21,6 @@ INSERT INTO administrator_admin (admin_id, password) VALUES
 ('admin02', '02'),
 ('admin03', '03');
 
-INSERT INTO shopping_purchase (purchase_id, destination, booked_date, cancel, user_id) VALUES
-('04', '京都1', '2026-06-17', '0', 'user01'),
-('05', '京都2', '2026-06-17', '0', 'user02'),
-('06', '京都3', '2026-06-17', '0', 'user03');
+INSERT INTO shopping_purchase (destination, booked_date, cancel, user_id) VALUES
+('京都1', '2026-06-17', '0', 'user01'),
+('京都2', '2026-06-17', '0', 'user02');
