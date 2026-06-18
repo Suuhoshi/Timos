@@ -306,7 +306,7 @@ def update_user_commit(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("/shopapp/")
+    return redirect("/shopapp/login/")
 
 
 
