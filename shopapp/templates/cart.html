@@ -6,9 +6,9 @@
   <p class="page-eyebrow">CART</p>
   <h1 class="page-title">ショッピングカート</h1>
 
-    {% if error %}
-    {{error}}
-    {% endif %}
+  {% if error %}
+  <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
   <table class="data-table">
     <thead>
       <tr>
@@ -57,8 +57,10 @@
     <span class="cart-total-label">合計</span>
     <span class="cart-total-amount">¥{{ total|floatformat:"0" }}</span>
   </div>
+  {% if cart_list %}
   <form action="/shopapp/purchase" method ="get"><input type="submit" value="購入する"></form>
   <br>
+  {% endif %}
 
   <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
 </div>

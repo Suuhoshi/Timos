@@ -439,6 +439,9 @@ def purchase_commit(request):
 
 def purchase(request):
     user = User.objects.get(user_id=request.session["user_id"])
+    if not Itemsincart.objects.filter(user=user).exists():
+        request.session["error"] = "カートに商品がありません。"
+        return redirect("/shopapp/cart/")
     context = {
         "user": user,
         "coupon_code": request.session.get("coupon_code", ""),
