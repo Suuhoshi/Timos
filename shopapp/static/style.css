@@ -798,7 +798,7 @@
    .rainbow-text {
     background: linear-gradient(
       to right,
-      red, orange, yellow, green, blue, indigo, violet
+      violet,indigo,blue,green,yellow,orange,red
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

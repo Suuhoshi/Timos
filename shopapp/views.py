@@ -18,7 +18,7 @@ ROULETTE_SEGMENTS = [
     {"label": "15% OFF", "percent": 15},
     {"label": "25% OFF",  "percent": 25},
 ]
-ROULETTE_WEIGHTS = [195, 1, 1, 195, 1, 1]
+ROULETTE_WEIGHTS = [495, 2, 1, 495, 4, 3]
 
 
 def _generate_coupon_code():
