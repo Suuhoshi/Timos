@@ -12,13 +12,13 @@ from django.contrib.auth import logout
 # 出目（表示順）。はずれを多めに重み付けする。
 ROULETTE_SEGMENTS = [
     {"label": "はずれ",   "percent": 0},
-    {"label": "5% OFF",  "percent": 5},
-    {"label": "10% OFF", "percent": 10},
+    {"label": "50% OFF",  "percent": 50},
+    {"label": "100% OFF", "percent": 100},
     {"label": "はずれ",   "percent": 0},
     {"label": "15% OFF", "percent": 15},
-    {"label": "5% OFF",  "percent": 5},
+    {"label": "25% OFF",  "percent": 25},
 ]
-ROULETTE_WEIGHTS = [3, 2, 2, 3, 1, 2]
+ROULETTE_WEIGHTS = [195, 1, 1, 195, 1, 1]
 
 
 def _generate_coupon_code():

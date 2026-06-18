@@ -9,7 +9,7 @@
   <div class="action-group" style="justify-content:center;">
     <a href="/shopapp/" class="btn btn-primary">コレクションを見る</a>
     <button type="button" class="btn btn-secondary" id="roulette-open">
-      {% if spun %}クーポンを確認{% else %}クーポンルーレットを回す{% endif %}
+      {% if spun %}クーポンを確認{% else %}Destiny Judgement!!!{% endif %}
     </button>
   </div>
 </div>
@@ -20,8 +20,8 @@
     <button type="button" class="modal-close" id="roulette-close" aria-label="閉じる">&times;</button>
 
     <p class="page-eyebrow" style="text-align:center;">LUCKY ROULETTE</p>
-    <h2 class="section-title" id="roulette-title" style="text-align:center; margin-bottom: 8px;">クーポンルーレット</h2>
-    <p class="roulette-note" style="margin-bottom: 28px;">回して当たればお買い物に使えるクーポンを進呈。<br>挑戦はおひとり様1回かぎりです。</p>
+    <p class="rainbow-text" id="roulette-title" style="text-align:center; margin-bottom: 8px; font-size: x-large;">ヒリつき確定わくわくルーレット</p>
+    <p class="roulette-note" style="margin-bottom: 28px;">クーポンが当たる確率は1/394!!<br>挑戦はおひとり様1回かぎり。<br>買い物前のワクワクをあなたに。</p>
 
     <div class="roulette">
       <div class="wheel-pointer"></div>
@@ -38,14 +38,14 @@
     {% if not spun %}
       <form action="" method="post" style="margin-top: 28px;">
         {% csrf_token %}
-        <button type="submit" class="btn btn-accent" style="height:48px; padding:0 40px;">ルーレットを回す</button>
+        <button type="submit" class="btn btn-accent" style="height:48px; padding:0 40px;">押せ!!!!</button>
       </form>
     {% endif %}
 
     <div class="roulette-result {% if result and not just_spun %}show{% endif %}" id="roulette-result">
       {% if result %}
         {% if result.percent > 0 %}
-          <p class="roulette-win">🎉 {{ result.percent }}% OFF クーポンが当たりました</p>
+          <p class="rainbow-text">🎉 {{ result.percent }}% OFF クーポンが当たりました</p>
           <div class="coupon-code">{{ result.code }}</div>
           <p class="roulette-note">購入画面（配送先入力）でこのコードを入力すると割引が適用されます。</p>
         {% else %}
