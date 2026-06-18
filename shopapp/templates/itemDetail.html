@@ -1,56 +1,66 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
 <div class="container-md">
   <p class="page-eyebrow">ITEM DETAIL</p>
-  <h1 class="product-name">{{ item.name }}</h1>
-  <p class="product-price">¥{{ item.price|floatformat:"0" }}</p>
 
-  <div class="card" style="margin-bottom: 32px;">
-    <table class="detail-table">
-      <tr>
-        <th>色</th>
-        <td>{{ item.color }}</td>
-      </tr>
-      <tr>
-        <th>メーカー</th>
-        <td>{{ item.manufacturer }}</td>
-      </tr>
-      <tr>
-        <th>在庫数</th>
-        <td>{{ item.stock }}個</td>
-      </tr>
-    </table>
-  </div>
+  <div class="detail-layout">
 
-  <form action="/shopapp/cart/" method="post">
-    {% csrf_token %}
-    <input type="hidden" name="item_id" value="{{ item.item_id }}">
-    <div class="action-group">
-      <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label">数量</label>
-        <select name="amount" style="width: 100px;">
-          {% for i in range %}
-            <option value="{{ i }}">{{ i }}</option>
-          {% endfor %}
-        </select>
+    <div class="detail-info">
+      <h1 class="product-name">{{ item.name }}</h1>
+      <p class="product-price">¥{{ item.price|floatformat:"0" }}</p>
+
+      <div style="width:300px; height:300px; overflow:hidden; border-radius:6px; background:#f7f3ec;">
+        <img src="/static/images/item_{{ item.item_id }}.png" alt="{{ item.name }}" style="width:100%; height:100%; object-fit:cover; display:block;">
+      </div><br>
+
+      <div class="card" style="margin-bottom: 32px;">
+        <table class="detail-table">
+          <tr>
+            <th>色</th>
+            <td>{{ item.color }}</td>
+          </tr>
+          <tr>
+            <th>メーカー</th>
+            <td>{{ item.manufacturer }}</td>
+          </tr>
+          <tr>
+            <th>在庫数</th>
+            <td>{{ item.stock }}個</td>
+          </tr>
+        </table>
       </div>
-      <button type="submit" class="btn btn-accent" style="align-self: flex-end;">カートに入れる</button>
-    </div>
-  </form>
 
-  <!-- ★ 追加：お気に入りボタン -->
-  {% if is_login %}
-    <div style="margin-top: 16px;">
-      {% if is_favorite %}
-        <a href="{% url 'shopapp:favorite_remove' item.item_id %}" class="btn btn-danger btn-sm">♥ お気に入り解除</a>
-      {% else %}
-        <a href="{% url 'shopapp:favorite_add' item.item_id %}" class="btn btn-accent btn-sm">♡ お気に入りに追加</a>
+      <form action="/shopapp/cart/" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="item_id" value="{{ item.item_id }}">
+        <div class="action-group">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">数量</label>
+            <select name="amount" style="width: 100px;">
+              {% for i in range %}
+                <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-accent" style="align-self: flex-end;">カートに入れる</button>
+        </div>
+      </form>
+
+      {% if is_login %}
+        <div style="margin-top: 16px;">
+          {% if is_favorite %}
+            <a href="{% url 'shopapp:favorite_remove' item.item_id %}" class="btn btn-danger btn-sm">♥ お気に入り解除</a>
+          {% else %}
+            <a href="{% url 'shopapp:favorite_add' item.item_id %}" class="btn btn-accent btn-sm">♡ お気に入りに追加</a>
+          {% endif %}
+        </div>
       {% endif %}
+
     </div>
-  {% endif %}
-  <!-- ★ 追加ここまで -->
+  </div>
 
   <a href="/shopapp/" class="back-link">商品検索へ戻る</a>
 </div>
