@@ -42,14 +42,36 @@
     </tbody>
   </table>
 
-  <div class="cart-footer">
-    <span class="cart-total-label">合計</span>
-    <span class="cart-total-amount">¥{{ total|floatformat:"0" }}</span>
+  {% if coupon_error %}
+    <div class="alert alert-error" style="margin-top:16px;">{{ coupon_error }}</div>
+  {% endif %}
+
+  <div class="cart-summary">
+    {% if coupon %}
+      <div class="summary-row">
+        <span>小計</span>
+        <span>¥{{ total|floatformat:"0" }}</span>
+      </div>
+      <div class="summary-row summary-discount">
+        <span>クーポン（{{ coupon.discount_percent }}% OFF ・ {{ coupon.code }}）</span>
+        <span>−¥{{ discount|floatformat:"0" }}</span>
+      </div>
+      <div class="summary-row summary-total">
+        <span class="cart-total-label">お支払い合計</span>
+        <span class="cart-total-amount">¥{{ discounted_total|floatformat:"0" }}</span>
+      </div>
+    {% else %}
+      <div class="cart-footer">
+        <span class="cart-total-label">合計</span>
+        <span class="cart-total-amount">¥{{ total|floatformat:"0" }}</span>
+      </div>
+    {% endif %}
   </div>
 
   <form action="/shopapp/purchaseCommit/" method="post" style="margin-top: 16px;">
     {% csrf_token %}
     <input type="hidden" name="destination" value="{{ destination }}">
+    <input type="hidden" name="coupon_code" value="{{ coupon_code }}">
     <button type="submit" class="btn btn-accent btn-full">購入を確定する</button>
   </form>
 

@@ -6,6 +6,96 @@
   <p class="hero-eyebrow">Timos</p>
   <h1 class="hero-title">確かな手仕事の、<br>帽子と鞄。</h1>
   <p class="hero-sub">職人がひとつずつ仕立てました。<br>長く使える、静かな道具を。</p>
-  <a href="/shopapp/" class="btn btn-primary">コレクションを見る</a>
+  <div class="action-group" style="justify-content:center;">
+    <a href="/shopapp/" class="btn btn-primary">コレクションを見る</a>
+    <button type="button" class="btn btn-secondary" id="roulette-open">
+      {% if spun %}クーポンを確認{% else %}クーポンルーレットを回す{% endif %}
+    </button>
+  </div>
 </div>
+
+<!-- ルーレット・ポップアップ -->
+<div class="modal-overlay" id="roulette-modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="roulette-title">
+    <button type="button" class="modal-close" id="roulette-close" aria-label="閉じる">&times;</button>
+
+    <p class="page-eyebrow" style="text-align:center;">LUCKY ROULETTE</p>
+    <h2 class="section-title" id="roulette-title" style="text-align:center; margin-bottom: 8px;">クーポンルーレット</h2>
+    <p class="roulette-note" style="margin-bottom: 28px;">回して当たればお買い物に使えるクーポンを進呈。<br>挑戦はおひとり様1回かぎりです。</p>
+
+    <div class="roulette">
+      <div class="wheel-pointer"></div>
+      <div class="wheel"
+           id="wheel"
+           data-index="{% if result %}{{ result.index }}{% endif %}"
+           data-animate="{% if just_spun %}1{% else %}0{% endif %}">
+        {% for seg in segments %}
+          <span class="wheel-label wheel-label-{{ forloop.counter0 }}">{{ seg.label }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if not spun %}
+      <form action="" method="post" style="margin-top: 28px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-accent" style="height:48px; padding:0 40px;">ルーレットを回す</button>
+      </form>
+    {% endif %}
+
+    <div class="roulette-result {% if result and not just_spun %}show{% endif %}" id="roulette-result">
+      {% if result %}
+        {% if result.percent > 0 %}
+          <p class="roulette-win">🎉 {{ result.percent }}% OFF クーポンが当たりました</p>
+          <div class="coupon-code">{{ result.code }}</div>
+          <p class="roulette-note">購入画面（配送先入力）でこのコードを入力すると割引が適用されます。</p>
+        {% else %}
+          <p class="roulette-lose">残念、はずれです。またのご来店をお待ちしています。</p>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    {% if spun and not just_spun %}
+      <p class="roulette-note" style="margin-top:16px;">このセッションの抽選は終了しました。</p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  (function () {
+    var modal  = document.getElementById('roulette-modal');
+    var openBtn  = document.getElementById('roulette-open');
+    var closeBtn = document.getElementById('roulette-close');
+    if (!modal) return;
+
+    function open()  { modal.classList.add('open');  modal.setAttribute('aria-hidden', 'false'); }
+    function close() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); }
+
+    if (openBtn)  openBtn.addEventListener('click', open);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+
+    var justSpun = {% if just_spun %}true{% else %}false{% endif %};
+    var spun     = {% if spun %}true{% else %}false{% endif %};
+    // 未抽選なら案内として自動表示。回した直後も開いたまま結果を見せる。
+    if (justSpun || !spun) open();
+
+    // ホイール回転
+    var wheel = document.getElementById('wheel');
+    if (!wheel || wheel.dataset.index === '') return;
+    var idx = parseInt(wheel.dataset.index, 10);
+    var seg = 360 / {{ segments|length }};
+    var target = 360 - (idx * seg + seg / 2);
+    var result = document.getElementById('roulette-result');
+
+    if (wheel.dataset.animate === '1') {
+      var finalDeg = 360 * 5 + target;
+      requestAnimationFrame(function () { wheel.style.transform = 'rotate(' + finalDeg + 'deg)'; });
+      setTimeout(function () { if (result) result.classList.add('show'); }, 4300);
+    } else {
+      wheel.style.transition = 'none';
+      wheel.style.transform = 'rotate(' + target + 'deg)';
+    }
+  })();
+</script>
 {% endblock %}

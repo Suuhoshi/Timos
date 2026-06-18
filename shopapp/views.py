@@ -1,13 +1,75 @@
+import random
+import string
+
 from django.shortcuts import render, redirect, get_object_or_404
 # from django.views.generic import View
 from .forms import UserForm, RegisterUserForm, RegisterUpdateForm, AdminForm, ItemForm
-from .models import Category, Item, User, Itemsincart, Purchase, Admin, Favorite
+from .models import Category, Item, User, Itemsincart, Purchase, Admin, Favorite, Coupon
 from django.contrib.auth import logout
+
+
+# ルーレット機能------------------------
+# 出目（表示順）。はずれを多めに重み付けする。
+ROULETTE_SEGMENTS = [
+    {"label": "はずれ",   "percent": 0},
+    {"label": "5% OFF",  "percent": 5},
+    {"label": "10% OFF", "percent": 10},
+    {"label": "はずれ",   "percent": 0},
+    {"label": "15% OFF", "percent": 15},
+    {"label": "5% OFF",  "percent": 5},
+]
+ROULETTE_WEIGHTS = [3, 2, 2, 3, 1, 2]
+
+
+def _generate_coupon_code():
+    return "TIMOS" + "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+
+def _create_coupon(percent):
+    code = _generate_coupon_code()
+    while Coupon.objects.filter(code=code).exists():
+        code = _generate_coupon_code()
+    return Coupon.objects.create(code=code, discount_percent=percent)
+
+
+def get_valid_coupon(code):
+    """使用可能なクーポンを返す。無効・使用済みなら None。"""
+    if not code:
+        return None
+    try:
+        coupon = Coupon.objects.get(code=code.strip())
+    except Coupon.DoesNotExist:
+        return None
+    if coupon.used:
+        return None
+    return coupon
 
 
 #ランディングページ追加------------------------
 def landing(request):
-    return render(request, 'landing.html')
+    context = {
+        "segments": ROULETTE_SEGMENTS,
+        "spun": request.session.get("roulette_done", False),
+        "result": request.session.get("roulette_result"),
+        "just_spun": False,
+    }
+
+    # セッションにつき1回だけ抽選
+    if request.method == "POST" and not request.session.get("roulette_done"):
+        index = random.choices(range(len(ROULETTE_SEGMENTS)), weights=ROULETTE_WEIGHTS, k=1)[0]
+        seg = ROULETTE_SEGMENTS[index]
+        result = {"index": index, "label": seg["label"], "percent": seg["percent"], "code": None}
+        if seg["percent"] > 0:
+            coupon = _create_coupon(seg["percent"])
+            result["code"] = coupon.code
+            request.session["coupon_code"] = coupon.code
+        request.session["roulette_done"] = True
+        request.session["roulette_result"] = result
+        context["spun"] = True
+        context["result"] = result
+        context["just_spun"] = True
+
+    return render(request, 'landing.html', context)
 #ランディングページ追加------------------------
 
 
@@ -378,7 +440,8 @@ def purchase_commit(request):
 def purchase(request):
     user = User.objects.get(user_id=request.session["user_id"])
     context = {
-        "user": user
+        "user": user,
+        "coupon_code": request.session.get("coupon_code", ""),
     }
     return render(request, "purchase.html", context)
 
@@ -387,6 +450,7 @@ def purchase(request):
 def purchase_confirm(request):
     destination = request.POST["destination"]
     cash = request.POST["cash"]
+    coupon_code = request.POST.get("coupon_code", "").strip()
     user_id=request.session["user_id"]
     user = User.objects.get(user_id=user_id)
     cart_list = Itemsincart.objects.filter(user=user)
@@ -395,12 +459,25 @@ def purchase_confirm(request):
     for cart in cart_list:
         total += (cart.item.price*cart.amount)
 
+    # クーポン適用（定率割引）
+    coupon = get_valid_coupon(coupon_code)
+    coupon_error = ""
+    if coupon_code and not coupon:
+        coupon_error = "クーポンコードが無効か、すでに使用されています。"
+    discount = (total * coupon.discount_percent // 100) if coupon else 0
+    discounted_total = total - discount
+
     context = {
         "user": user,
         "destination": destination,
         "cash":cash,
         "cart_list": cart_list,
         "total": total,
+        "coupon": coupon,
+        "coupon_code": coupon_code,
+        "coupon_error": coupon_error,
+        "discount": discount,
+        "discounted_total": discounted_total,
     }
     return render(request, "purchaseConfirm.html", context)
 
@@ -411,11 +488,20 @@ def purchase_commit(request):
     user = User.objects.get(user_id=user_id)
 
     destination = request.POST["destination"]
+    coupon_code = request.POST.get("coupon_code", "").strip()
     purchase = Purchase()
     purchase.destination = destination
     purchase.user = user
     purchase.cancel = False
     purchase.save()
+
+    # クーポンを使用済みにする
+    coupon = get_valid_coupon(coupon_code)
+    if coupon:
+        coupon.used = True
+        coupon.save()
+    request.session.pop("coupon_code", None)
+
     Itemsincart.objects.filter(user_id=user_id).delete()
     name=user.name
     context ={

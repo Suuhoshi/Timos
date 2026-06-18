@@ -88,3 +88,16 @@ class Favorite(models.Model):
 
     def __str__(self):
         return
+
+
+class Coupon(models.Model):
+    class Meta:
+        db_table = "shopping_coupon"
+
+    code = models.CharField(verbose_name="クーポンコード", max_length=20, primary_key=True)
+    discount_percent = models.IntegerField(verbose_name="割引率(%)")
+    used = models.BooleanField(verbose_name="使用済み", default=False)
+    created_at = models.DateTimeField(verbose_name="発行日時", auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.code} ({self.discount_percent}%)"
