@@ -611,6 +611,21 @@
      letter-spacing: 0.04em;
    }
    
+   .result-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f4f1ec;
+    vertical-align: middle;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+  
+  .data-table td {
+    vertical-align: middle;
+    padding: 12px 16px;
+  }
+   
    /* ---- Modal (popup) ---------------------------------------- */
    .modal-overlay {
      position: fixed;
@@ -815,3 +830,71 @@
       background-position: 200%;
     }
   }
+
+/* ============================================================
+   Responsive — tablet & mobile
+   ============================================================ */
+
+/* Tablet and below */
+@media (max-width: 768px) {
+  .main-content { padding: 48px 0 64px; }
+  .page-title { font-size: 1.75rem; margin-bottom: 32px; }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  /* Header: wordmark on top, nav wraps onto its own row */
+  .site-header .container {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .site-nav {
+    width: 100%;
+    gap: 14px 18px;
+    flex-wrap: wrap;
+  }
+  .nav-link { font-size: 0.8125rem; }
+
+  .main-content { padding: 36px 0 56px; }
+  .page-title { font-size: 1.5rem; margin-bottom: 28px; }
+  .section-title { font-size: 1.25rem; }
+  .hero { padding: 56px 0 40px; }
+
+  /* Roomier cards become tighter */
+  .card { padding: 24px; }
+  .card-sm { padding: 20px; }
+
+  /* Wide tables scroll horizontally instead of breaking layout */
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .data-table thead th { padding: 10px 12px; }
+  .data-table tbody td { padding: 12px; }
+
+  /* Detail / info labels take less width */
+  .detail-table th { width: 96px; font-size: 0.6875rem; }
+  .info-list .info-label { width: 88px; }
+
+  /* Search form stacks full-width */
+  .search-form { flex-direction: column; align-items: stretch; }
+  .search-form .form-group { width: 100%; }
+  .search-form select { min-width: 0; width: 100%; }
+  .search-form button { width: 100%; }
+
+  /* Action buttons stack full-width for easy tapping */
+  .action-group { flex-direction: column; align-items: stretch; }
+  .action-group > .btn { width: 100%; }
+}
+
+/* Small phones: shrink the roulette wheel so it fits the modal */
+@media (max-width: 480px) {
+  .modal { padding: 36px 18px 28px; }
+  .roulette,
+  .wheel { width: min(72vw, 260px); height: min(72vw, 260px); }
+}

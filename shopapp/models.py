@@ -34,8 +34,17 @@ class Item(models.Model):
     color = models.CharField(verbose_name="商品の色", max_length=16)
     price = models.IntegerField(verbose_name="価格")
     stock = models.IntegerField(verbose_name="在庫数")
-    recommended = models.BooleanField(verbose_name="オススメ", max_length=1, default=False)
-    category = models.ForeignKey(Category ,verbose_name="カテゴリ名", on_delete=models.CASCADE)
+    recommended = models.BooleanField(verbose_name="オススメ", default=False)
+    category = models.ForeignKey(Category, verbose_name="カテゴリ名", on_delete=models.CASCADE)
+    image = models.ImageField(
+        verbose_name="商品画像",
+        upload_to="items/",
+        blank=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class Itemsincart(models.Model):

@@ -18,7 +18,7 @@ ROULETTE_SEGMENTS = [
     {"label": "15% OFF", "percent": 15},
     {"label": "25% OFF",  "percent": 25},
 ]
-ROULETTE_WEIGHTS = [495, 2, 1, 495, 4, 3]
+ROULETTE_WEIGHTS = [0, 0, 0, 0, 1, 0]
 
 
 def _generate_coupon_code():
@@ -306,7 +306,7 @@ def update_user_commit(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("/shopapp/")
+    return redirect("/shopapp/login/")
 
 
 
@@ -439,6 +439,9 @@ def purchase_commit(request):
 
 def purchase(request):
     user = User.objects.get(user_id=request.session["user_id"])
+    if not Itemsincart.objects.filter(user=user).exists():
+        request.session["error"] = "カートに商品がありません。"
+        return redirect("/shopapp/cart/")
     context = {
         "user": user,
         "coupon_code": request.session.get("coupon_code", ""),
